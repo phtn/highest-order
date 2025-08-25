@@ -1,22 +1,25 @@
 "use client";
 
-import { SettingsPanelTrigger } from "@/components/settings-panel";
+import {
+  SettingsPanelTrigger,
+  useSettingsPanel,
+} from "@/components/settings-panel";
 import {
   Breadcrumb,
   BreadcrumbItem,
   BreadcrumbLink,
   BreadcrumbList,
   BreadcrumbPage,
-  BreadcrumbSeparator,
 } from "@/components/ui/breadcrumb";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
-import { ChatMessage } from "@/components/chat-message";
 import { useRef, useEffect } from "react";
 import { Icon } from "@/lib/icons";
+import { cn } from "@/lib/utils";
 
 export default function Chat() {
   const messagesEndRef = useRef<HTMLDivElement>(null);
+  const { state } = useSettingsPanel();
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView();
@@ -24,33 +27,41 @@ export default function Chat() {
 
   return (
     <ScrollArea className="flex-1 [&>div>div]:h-full w-full shadow-md border-r-[0.5px] border-black/[0.14] md:rounded-tr-md min-[1024px]:rounded-e-3xl bg-background">
-      <div className="h-full flex flex-col px-4 md:px-6 lg:px-8">
+      <div className="h-full flex flex-col px-4 md:px-6 lg:px-6">
         {/* Header */}
         <div className="py-5 sticky top-0 z-10 before:absolute before:inset-x-0 before:bottom-0 before:h-px before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
           <div className="flex items-center justify-between gap-2">
             <Breadcrumb>
               <BreadcrumbList className="sm:gap-1.5">
                 <BreadcrumbItem>
-                  <BreadcrumbLink href="#">Playground</BreadcrumbLink>
+                  <BreadcrumbLink href="#">Canvas</BreadcrumbLink>
                 </BreadcrumbItem>
-                <BreadcrumbSeparator />
+                <Icon name="px-close" className="rotate-90" />
                 <BreadcrumbItem>
-                  <BreadcrumbPage>Chat</BreadcrumbPage>
+                  <BreadcrumbPage>Design</BreadcrumbPage>
                 </BreadcrumbItem>
               </BreadcrumbList>
             </Breadcrumb>
-            <div className="flex items-center gap-1 -my-2 -me-4">
+            <div
+              className={cn(
+                "flex items-center gap-1 -my-2 -me-2",
+                "transition-transform duration-[300ms] translate-x-0",
+                {
+                  "-translate-x-[3.25rem]": state === "collapsed",
+                },
+              )}
+            >
               <Button variant="ghost" className="px-2">
                 <Icon name="px-code" className="text-muted-foreground" />
-                <span className="max-sm:sr-only">Code</span>
+                <span className="max-sm:sr-only">Review</span>
               </Button>
               <Button variant="ghost" className="px-2">
                 <Icon name="px-close" className="text-muted-foreground" />
-                <span className="max-sm:sr-only">Share</span>
+                <span className="max-sm:sr-only">Build</span>
               </Button>
               <Button variant="ghost" className="px-2">
                 <Icon name="px-check" className="text-muted-foreground" />
-                <span className="max-sm:sr-only">Export</span>
+                <span className="max-sm:sr-only">Deploy</span>
               </Button>
               <SettingsPanelTrigger />
             </div>
@@ -68,22 +79,7 @@ export default function Chat() {
                 Today
               </div>
             </div>
-            <ChatMessage isUser>
-              <p>Hey Bolt, can you tell me more about AI Agents?</p>
-            </ChatMessage>
-            <ChatMessage>
-              <p>
-                AI agents are software that perceive their environment and act
-                autonomously to achieve goals, making decisions, learning, and
-                interacting. For example, an AI agent might schedule meetings by
-                resolving conflicts, contacting participants, and finding
-                optimal times—all without constant supervision.
-              </p>
-              <p>Let me know if you&lsquo;d like more details!</p>
-            </ChatMessage>
-            <ChatMessage isUser>
-              <p>All clear, thank you!</p>
-            </ChatMessage>
+
             <div ref={messagesEndRef} aria-hidden="true" />
           </div>
         </div>
@@ -101,12 +97,12 @@ export default function Chat() {
                 {/* Left buttons */}
                 <div className="flex items-center gap-2">
                   <Button
-                    variant="outline"
                     size="icon"
+                    variant="outline"
                     className="rounded-full size-8 border-none hover:bg-background hover:shadow-md transition-[box-shadow]"
                   >
                     <Icon
-                      name="slash"
+                      name="px-dollar"
                       className="text-muted-foreground/70 size-5"
                     />
                     <span className="sr-only">Attach</span>
@@ -117,7 +113,7 @@ export default function Chat() {
                     className="rounded-full size-8 border-none hover:bg-background hover:shadow-md transition-[box-shadow]"
                   >
                     <Icon
-                      name="slash"
+                      name="px-download"
                       className="text-muted-foreground/70 size-5"
                     />
                     <span className="sr-only">Audio</span>
@@ -128,7 +124,7 @@ export default function Chat() {
                     className="rounded-full size-8 border-none hover:bg-background hover:shadow-md transition-[box-shadow]"
                   >
                     <Icon
-                      name="slash"
+                      name="px-zap"
                       className="text-muted-foreground/70 size-5"
                     />
                     <span className="sr-only">Action</span>
@@ -141,43 +137,11 @@ export default function Chat() {
                     size="icon"
                     className="rounded-full size-8 border-none hover:bg-background hover:shadow-md transition-[box-shadow]"
                   >
-                    <svg
-                      xmlns="http://www.w3.org/2000/svg"
-                      width="16"
-                      height="16"
-                      fill="none"
-                    >
-                      <g clipPath="url(#icon-a)">
-                        <path
-                          fill="url(#icon-b)"
-                          d="m8 .333 2.667 5 5 2.667-5 2.667-2.667 5-2.667-5L.333 8l5-2.667L8 .333Z"
-                        />
-                        <path
-                          stroke="#451A03"
-                          strokeOpacity=".04"
-                          d="m8 1.396 2.225 4.173.072.134.134.071L14.604 8l-4.173 2.226-.134.071-.072.134L8 14.604l-2.226-4.173-.071-.134-.134-.072L1.396 8l4.173-2.226.134-.071.071-.134L8 1.396Z"
-                        />
-                      </g>
-                      <defs>
-                        <linearGradient
-                          id="icon-b"
-                          x1="8"
-                          x2="8"
-                          y1=".333"
-                          y2="15.667"
-                          gradientUnits="userSpaceOnUse"
-                        >
-                          <stop stopColor="#FDE68A" />
-                          <stop offset="1" stopColor="#F59E0B" />
-                        </linearGradient>
-                        <clipPath id="icon-a">
-                          <path fill="#fff" d="M0 0h16v16H0z" />
-                        </clipPath>
-                      </defs>
-                    </svg>
                     <span className="sr-only">Generate</span>
                   </Button>
-                  <Button className="rounded-full h-8">Ask Bart</Button>
+                  <Button className="rounded-full aspect-square size-8">
+                    <Icon name="px-arrow-up" />
+                  </Button>
                 </div>
               </div>
             </div>

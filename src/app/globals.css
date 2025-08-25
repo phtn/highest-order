@@ -3,6 +3,22 @@
 
 @custom-variant dark (&:is(.dark *));
 
+@keyframes enter {
+    0% {
+        opacity: 0;
+        transform: translateZ(0px) scale(0.9);
+    }
+    60% {
+        opacity: 0.3;
+        transform: translateZ(0) scale(1.02);
+        backface-visibility: hidden;
+    }
+    100% {
+        opacity: 1;
+        transform: translateZ(0) scale(1);
+    }
+}
+
 @theme inline {
     --color-background: var(--background);
     --color-foreground: var(--foreground);
@@ -42,6 +58,7 @@
     --radius-md: calc(var(--radius) - 2px);
     --radius-lg: var(--radius);
     --radius-xl: calc(var(--radius) + 4px);
+    --animate-enter: enter 300ms ease-out normal both;
 }
 
 :root {

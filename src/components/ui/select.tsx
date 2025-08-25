@@ -40,7 +40,7 @@ function SelectTrigger({
     >
       {children}
       <SelectPrimitive.Icon asChild>
-        <Icon name="px-alpha" className="text-muted-foreground/80" />
+        <Icon name="px-code" className="text-muted-foreground/80 rotate-90" />
       </SelectPrimitive.Icon>
     </SelectPrimitive.Trigger>
   );

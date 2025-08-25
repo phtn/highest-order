@@ -112,14 +112,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
     [toggleTheme, isDark],
   );
   return (
-    <Sidebar {...props} className="!border-none">
+    <Sidebar {...props} className="border-none">
       <SidebarHeader className="bg-fade">
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
-      <SidebarContent>
+      <SidebarContent className="">
         {/* We only show the first parent group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="uppercase text-sidebar-foreground/50">
+          <SidebarGroupLabel className="uppercase h-12 text-sidebar-foreground/50">
             {data.navMain[0]?.title}
           </SidebarGroupLabel>
           <SidebarGroupContent className="px-2">

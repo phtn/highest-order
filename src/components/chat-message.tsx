@@ -67,7 +67,7 @@ function ActionButton({ icon, label }: ActionButtonProps) {
 
 function MessageActions() {
   return (
-    <div className="relative inline-flex bg-background rounded-sm border-[0.5px] border-foreground/[0.14] shadow-xs -space-x-[0.5px]">
+    <div className="relative inline-flex bg-background rounded-sm border-[0.5px] border-foreground/[0.16] shadow-xs -space-x-[0.5px]">
       <TooltipProvider delayDuration={0}>
         <ActionButton icon="px-pin" label="Show code" />
         <ActionButton icon="px-paint" label="Bookmark" />

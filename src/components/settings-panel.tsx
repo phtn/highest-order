@@ -27,6 +27,7 @@ import {
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
+import { motion } from "motion/react";
 
 type Collapsible = "none" | "icon" | "content";
 
@@ -51,7 +52,7 @@ const SETTINGS_COOKIE_NAME = "settings:state";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
 const SETTINGS_WIDTH = "300px";
 const SETTINGS_WIDTH_MOBILE = "18rem";
-const SETTINGS_WIDTH_ICON = "3rem";
+const SETTINGS_WIDTH_ICON = "0rem";
 const SETTINGS_KEYBOARD_SHORTCUT = "p";
 
 const SettingsPanelContext = createContext<SettingsPanelContext | null>(null);
@@ -148,7 +149,7 @@ const SettingsPanelProvider = ({
 SettingsPanelProvider.displayName = "SettingsPanelProvider";
 
 interface SettingsPanelProps extends ComponentProps<"div"> {
-  side: "left" | "right";
+  side?: "left" | "right";
 }
 
 const SettingsPanel = ({
@@ -185,7 +186,7 @@ const SettingsPanel = ({
     return (
       <Sheet open={openMobile} onOpenChange={setOpenMobile}>
         <SheetContent
-          className={cn("w-72 px-4 md:px-6 py-0 bg-fade [&>button]:hidden")}
+          className={cn("w-72 px-4 py-0 bg-fade [&>button]:hidden", {})}
           style={
             {
               "--settings-width": SETTINGS_WIDTH_MOBILE,
@@ -202,12 +203,12 @@ const SettingsPanel = ({
   }
 
   return (
-    <ScrollArea>
+    <ScrollArea className="">
       {!open && (
         <Button
-          variant="outline"
           size="icon"
-          className="absolute top-4 right-4 z-100"
+          variant="outline"
+          className="absolute rounded-full size-8 top-4 right-6 z-100 animate-enter"
           onClick={togglePanel}
         >
           <Icon name="plus" className="size-4" />
@@ -218,14 +219,16 @@ const SettingsPanel = ({
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-side={side}
         className={cn(
-          "px-4 md:px-6 bg-fade group peer hidden md:block text-sidebar-foreground",
+          "bg-fade group peer hidden md:block text-sidebar-foreground transition-[width] duration-300 ease-in-out",
+          state === "expanded" ? "w-(--settings-width)" : "w-0",
         )}
       >
         <div
-          data-settings="settings"
           className={cn(
-            "duration-300 relative h-svh w-(--settings-width) bg-transparent transition-[width] ease-in-out",
-            "group-data-[collapsible=offcanvas]:w-0",
+            "relative h-svh bg-transparent transition-transform duration-300 ease-in-out",
+            "w-(--settings-width) px-4 md:px-6",
+            state === "collapsed" &&
+              (side === "right" ? "translate-x-full" : "-translate-x-full"),
           )}
         >
           <SettingsPanelContent />
@@ -243,14 +246,25 @@ const SettingsPanelContent = () => {
   return (
     <>
       {/* Sidebar header */}
-      <div className="h-16 flex items-center justify-between relative before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
+      <div
+        className={cn(
+          "h-[3.75rem] flex items-center justify-between relative",
+          "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
+        )}
+        style={
+          {
+            "--settings-width": SETTINGS_WIDTH,
+            "--settings-width-icon": SETTINGS_WIDTH_ICON,
+          } as CSSProperties
+        }
+      >
         <div className="flex items-center gap-2">
+          <h2 className="text-sm font-medium">Preferences</h2>
           <Icon
             name="wave-sine-thin"
             aria-hidden="true"
             className="text-muted-foreground/70"
           />
-          <h2 className="text-sm font-medium">Preferences</h2>
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -265,22 +279,27 @@ const SettingsPanelContent = () => {
       </div>
 
       {/* Sidebar content */}
-      <div className="-mt-px">
+      <motion.div className="-mt-px whitespace-nowrap">
         {/* Content group */}
-        <div className="py-5 relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
-          <h3 className="text-xs font-medium uppercase text-muted-foreground/80 mb-4">
+        <div
+          className={cn(
+            "py-5 relative transition-all duration-300 ease-in-out",
+            "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
+          )}
+        >
+          <h3 className="text-xs font-medium uppercase text-muted-foreground/80">
             Chat presets
           </h3>
-          <div className="space-y-3">
+          <div className="">
             {/* Model */}
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex h-12 items-center justify-between gap-2">
               <Label htmlFor={`${id}-model`} className="font-normal">
                 Model
               </Label>
               <Select defaultValue="1">
                 <SelectTrigger
                   id={`${id}-model`}
-                  className="bg-background w-auto max-w-full h-7 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
+                  className="bg-muted w-auto max-w-full h-8 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
                 >
                   <SelectValue placeholder="Select model" />
                 </SelectTrigger>
@@ -289,48 +308,20 @@ const SettingsPanelContent = () => {
                   align="end"
                 >
                   <SelectItem value="1">Chat 4.0</SelectItem>
-                  <SelectItem value="2">Chat 3.5</SelectItem>
-                  <SelectItem value="3">Chat 3.0</SelectItem>
-                  <SelectItem value="4">Chat 2.5</SelectItem>
-                  <SelectItem value="5">Chat 2.0</SelectItem>
-                  <SelectItem value="6">Chat 1.5</SelectItem>
                   <SelectItem value="7">Chat 1.0</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Response format */}
-            <div className="flex items-center justify-between gap-2">
-              <Label htmlFor={`${id}-response-format`} className="font-normal">
-                Response format
-              </Label>
-              <Select defaultValue="1">
-                <SelectTrigger
-                  id={`${id}-response-format`}
-                  className="bg-background w-auto max-w-full h-7 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
-                >
-                  <SelectValue placeholder="Select response format" />
-                </SelectTrigger>
-                <SelectContent
-                  className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2"
-                  align="end"
-                >
-                  <SelectItem value="1">text</SelectItem>
-                  <SelectItem value="2">json_object</SelectItem>
-                  <SelectItem value="3">json_schema</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
             {/* Writing style */}
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex h-12 items-center justify-between gap-2">
               <Label htmlFor={`${id}-writing-style`} className="font-normal">
                 Writing style
               </Label>
               <Select defaultValue="1">
                 <SelectTrigger
                   id={`${id}-writing-style`}
-                  className="bg-background w-auto max-w-full h-7 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
+                  className="bg-muted w-auto max-w-full h-8 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
                 >
                   <SelectValue placeholder="Select writing style" />
                 </SelectTrigger>
@@ -339,23 +330,21 @@ const SettingsPanelContent = () => {
                   align="end"
                 >
                   <SelectItem value="1">Concise</SelectItem>
-                  <SelectItem value="2">Formal</SelectItem>
                   <SelectItem value="3">Technical</SelectItem>
-                  <SelectItem value="4">Creative</SelectItem>
                   <SelectItem value="5">Scientific</SelectItem>
                 </SelectContent>
               </Select>
             </div>
 
             {/* Mode */}
-            <div className="flex items-center justify-between gap-2">
+            <div className="flex h-12 items-center justify-between gap-2">
               <Label htmlFor={`${id}-mode`} className="font-normal">
                 Mode
               </Label>
               <Select defaultValue="1">
                 <SelectTrigger
                   id={`${id}-mode`}
-                  className="bg-background w-auto max-w-full h-7 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
+                  className="bg-muted w-auto max-w-full h-8 py-1 px-2 gap-2 [&_svg]:-me-1 border-none"
                 >
                   <SelectValue placeholder="Select mode" />
                 </SelectTrigger>
@@ -363,10 +352,7 @@ const SettingsPanelContent = () => {
                   className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2"
                   align="end"
                 >
-                  <SelectItem value="1">Chatbot</SelectItem>
-                  <SelectItem value="2">Code</SelectItem>
-                  <SelectItem value="3">Translate</SelectItem>
-                  <SelectItem value="4">Summarize</SelectItem>
+                  <SelectItem value="1">Code</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -374,7 +360,13 @@ const SettingsPanelContent = () => {
         </div>
 
         {/* Content group */}
-        <div className="py-5 relative before:absolute before:inset-x-0 before:top-0 before:h-px before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
+        <div
+          className={cn(
+            "py-5 relative",
+
+            "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
+          )}
+        >
           <h3 className="text-xs font-medium uppercase text-muted-foreground/80 mb-4">
             Configurations
           </h3>
@@ -411,7 +403,7 @@ const SettingsPanelContent = () => {
             />
           </div>
         </div>
-      </div>
+      </motion.div>
     </>
   );
 };

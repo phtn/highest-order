@@ -44,7 +44,7 @@ export default function SliderControl({
   } = useSliderWithInput({ minValue, maxValue, initialValue, defaultValue });
 
   return (
-    <div className={cn("space-y-3", className)}>
+    <div className={cn("space-y-3 h-14", className)}>
       <div className="flex items-center justify-between gap-2">
         <Label className="font-normal">{label}</Label>
         <div className="flex items-center gap-1">
