@@ -2,66 +2,32 @@
 
 import { Icon } from "@/lib/icons";
 import Image from "next/image";
+import { useEffect } from "react";
+import { Effect, Duration, Console } from "effect";
+import { useRouter } from "next/navigation";
 
-import { AppSidebar } from "@/components/app-sidebar";
-import {
-  SidebarInset,
-  SidebarProvider,
-  SidebarTrigger,
-} from "@/components/ui/sidebar";
-import UserDropdown from "@/components/user-dropdown";
-import {
-  SettingsPanelProvider,
-  SettingsPanel,
-} from "@/components/settings-panel";
-import Chat from "@/components/chat";
+const runAfter = (fn: VoidFunction, seconds = 3) =>
+  Effect.gen(function* ($) {
+    yield* $(Effect.sleep(Duration.seconds(seconds)));
+    yield* $(Console.log("Effect completed"));
+    return fn();
+  });
 
 export const Content = () => {
+  const router = useRouter();
+  useEffect(() => {
+    // Run an Effect that waits for `seconds` then runs the provided callback.
+    // We use runPromise to execute the Effect in the client.
+    Effect.runPromise(runAfter(() => router.push("/entry"), 3));
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
   return (
-    <SidebarProvider>
-      <AppSidebar />
-      <SidebarInset className="group/sidebar-inset">
-        <header className="flex h-16 shrink-0 items-center gap-2 px-4 md:px-6 lg:px-8 bg-fade text-sidebar-foreground relative before:absolute before:inset-y-3 before:-left-px before:w-px before:bg-gradient-to-b before:from-white/5 before:via-white/10 before:to-white/5 before:z-50">
-          <SidebarTrigger className="-ms-2" />
-          <div className="flex items-center gap-8 ml-auto">
-            <nav className="flex items-center text-sm font-medium max-sm:hidden">
-              <a
-                className="text-sidebar-foreground/50 hover:text-sidebar-foreground/70 transition-colors [&[aria-current]]:text-sidebar-foreground before:content-['/'] before:px-4 before:text-sidebar-foreground/30 first:before:hidden"
-                href="#"
-                aria-current
-              >
-                Playground
-              </a>
-              <a
-                className="text-sidebar-foreground/50 hover:text-sidebar-foreground/70 transition-colors [&[aria-current]]:text-sidebar-foreground before:content-['/'] before:px-4 before:text-sidebar-foreground/30 first:before:hidden"
-                href="#"
-              >
-                Dashboard
-              </a>
-              <a
-                className="text-sidebar-foreground/50 hover:text-sidebar-foreground/70 transition-colors [&[aria-current]]:text-sidebar-foreground before:content-['/'] before:px-4 before:text-sidebar-foreground/30 first:before:hidden"
-                href="#"
-              >
-                Docs
-              </a>
-              <a
-                className="text-sidebar-foreground/50 hover:text-sidebar-foreground/70 transition-colors [&[aria-current]]:text-sidebar-foreground before:content-['/'] before:px-4 before:text-sidebar-foreground/30 first:before:hidden"
-                href="#"
-              >
-                API Reference
-              </a>
-            </nav>
-            <UserDropdown />
-          </div>
-        </header>
-        <SettingsPanelProvider>
-          <div className="relative w-full flex h-[calc(100svh-4rem)] bg-fade _bg-[hsl(240_5%_92.16%)] md:rounded-s-3xl md:group-peer-data-[state=collapsed]/sidebar-inset:rounded-s-none transition-all ease-in-out duration-300">
-            <Chat />
-            <SettingsPanel />
-          </div>
-        </SettingsPanelProvider>
-      </SidebarInset>
-    </SidebarProvider>
+    <main className="flex justify-center size-screen overflow-hidden">
+      <div className="flex flex-col items-center justify-center size-[35rem]">
+        <Icon name="creator" className="size-28 text-foreground/10" />
+        <div className="h-9 text-muted-foreground">Initializing...</div>
+      </div>
+    </main>
   );
 };
 

@@ -1,8 +1,7 @@
 import type { Metadata } from "next";
 import { Content } from "./content";
-
 export const metadata: Metadata = {
-  title: "Chat Template - re-up.ph",
+  title: "Initializing...",
 };
 
 export default async function Page() {

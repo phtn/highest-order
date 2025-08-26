@@ -19,6 +19,7 @@ import {
 import Image from "next/image";
 import { Icon } from "@/lib/icons";
 import { NavGroup } from "./types";
+import Link from "next/link";
 
 interface TeamSwitcherProps {
   teams: NavGroup[];
@@ -36,10 +37,11 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
           <DropdownMenuTrigger asChild>
             <SidebarMenuButton
               size="lg"
-              className="rounded-sm data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground gap-3 [&>svg]:size-auto"
+              className="rounded-xl data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground gap-3 [&>svg]:size-auto"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-md overflow-hidden bg-gradient-to-br from-slate-600/40 via-slate-700/80 to-sidebar-primary/20 text-sidebar-primary-foreground relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_1px_2px_0_rgb(0_0_0/.05),inset_0_1px_0_0_rgb(255_255_255/.12)] after:pointer-events-none">
-                {activeTeam && <Icon name="px-code" />}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden bg-gradient-to-br from-slate-600/80 via-slate-600/40 to-sidebar-primary/20 text-sidebar-primary-foreground relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_0_1px_0_rgb(0_0_0/.05),inset_0.4px_0.4px_0.6px_0.0_rgb(255_255_255/.25)] after:pointer-events-none">
+                {activeTeam && <Icon name="creator" className="size-5" />}
+                <div className="bg-orange-100/70 blur-md h-5 w-5 absolute -bottom-3 -right-3" />
               </div>
               <div className="grid flex-1 text-left text-base leading-tight">
                 <span className="truncate font-medium">
@@ -67,15 +69,18 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
                 onClick={() => setActiveTeam(team)}
                 className="gap-2 p-2"
               >
-                <div className="flex size-6 items-center justify-center rounded-md overflow-hidden">
+                <Link
+                  href={team.url ?? "/"}
+                  className="flex size-6 items-center justify-center rounded-md overflow-hidden"
+                >
                   <Image
-                    src={"vercel.svg"}
+                    src={"./vercel.svg"}
                     width={36}
                     height={36}
                     alt={team.name ?? "team-name"}
                     className="h-9 w-auto aspect-auto shrink-0"
                   />
-                </div>
+                </Link>
                 {team.name}
                 <DropdownMenuShortcut>⌘{index + 1}</DropdownMenuShortcut>
               </DropdownMenuItem>

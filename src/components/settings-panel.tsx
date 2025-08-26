@@ -50,7 +50,7 @@ type SettingsPanelContext = {
 
 const SETTINGS_COOKIE_NAME = "settings:state";
 const SETTINGS_COOKIE_MAX_AGE = 60 * 60 * 24 * 7;
-const SETTINGS_WIDTH = "300px";
+const SETTINGS_WIDTH = "286px";
 const SETTINGS_WIDTH_MOBILE = "18rem";
 const SETTINGS_WIDTH_ICON = "0rem";
 const SETTINGS_KEYBOARD_SHORTCUT = "p";

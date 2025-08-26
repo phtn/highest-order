@@ -124,7 +124,7 @@ function SidebarProvider({
             } as React.CSSProperties
           }
           className={cn(
-            "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-sidebar",
+            "group/sidebar-wrapper flex min-h-svh w-full has-data-[variant=inset]:bg-fade",
             className,
           )}
           {...props}
@@ -154,7 +154,7 @@ function Sidebar({
     return (
       <div
         className={cn(
-          "flex h-full w-(--sidebar-width) flex-col bg-sidebar text-sidebar-foreground",
+          "flex h-full w-(--sidebar-width) flex-col bg-fade text-sidebar-foreground",
           className,
         )}
         {...props}
@@ -171,7 +171,7 @@ function Sidebar({
           data-sidebar="sidebar"
           data-mobile="true"
           className={cn(
-            "w-(--sidebar-width) bg-sidebar p-0 text-sidebar-foreground [&>button]:hidden",
+            "w-(--sidebar-width) bg-fade p-0 text-sidebar-foreground [&>button]:hidden",
             className,
           )}
           style={
@@ -239,13 +239,10 @@ function SidebarTrigger({
 
   return (
     <Button
-      data-sidebar="trigger"
-      variant="ghost"
       size="icon"
-      className={cn(
-        "text-muted-foreground/70 hover:text-foreground",
-        className,
-      )}
+      variant="ghost"
+      data-sidebar="trigger"
+      className={cn("text-muted-foreground hover:text-foreground", className)}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
@@ -253,13 +250,9 @@ function SidebarTrigger({
       {...props}
     >
       {open ? (
-        <Icon
-          name="px-chevron-right"
-          className="rotate-180"
-          aria-hidden="true"
-        />
+        <Icon name="sidebar" className="size-6" aria-hidden="true" />
       ) : (
-        <Icon name="px-chevron-right" className="" aria-hidden="true" />
+        <Icon name="sidebar" className="size-6 rotate-180" aria-hidden="true" />
       )}
       <span className="sr-only">Toggle Sidebar</span>
     </Button>
@@ -294,7 +287,7 @@ function SidebarInset({ className, ...props }: React.ComponentProps<"main">) {
   return (
     <main
       className={cn(
-        "relative flex min-h-svh flex-1 flex-col bg-background",
+        "relative flex min-h-svh flex-1 flex-col bg-fade",
         "peer-data-[variant=inset]:min-h-[calc(100svh-(--spacing(4)))] md:peer-data-[variant=inset]:m-2 md:peer-data-[variant=inset]:peer-data-[state=collapsed]:ml-2 md:peer-data-[variant=inset]:ml-0 md:peer-data-[variant=inset]:rounded-xl md:peer-data-[variant=inset]:shadow-sm",
         className,
       )}
@@ -330,7 +323,7 @@ function SidebarFooter({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-sidebar="footer"
-      className={cn("flex flex-col gap-2 p-2", className)}
+      className={cn("flex flex-col gap-2", className)}
       {...props}
     />
   );
@@ -369,7 +362,7 @@ function SidebarGroup({ className, ...props }: React.ComponentProps<"div">) {
   return (
     <div
       data-sidebar="group"
-      className={cn("relative flex w-full min-w-0 flex-col p-2", className)}
+      className={cn("relative flex w-full min-w-0 flex-col p-3", className)}
       {...props}
     />
   );
@@ -648,7 +641,7 @@ const sidebarMenuButtonVariants = cva(
   {
     variants: {
       variant: {
-        default: "hover:bg-sidebar-accent hover:text-sidebar-accent-foreground",
+        default: "hover:bg-sidebar hover:text-sidebar-accent-foreground",
         outline:
           "bg-background shadow-[0_0_0_1px_hsl(var(--sidebar-border))] hover:bg-sidebar-accent hover:text-sidebar-accent-foreground hover:shadow-[0_0_0_1px_hsl(var(--sidebar-accent))]",
       },

@@ -23,19 +23,22 @@ export function ChatMessage({ isUser, children }: ChatMessageProps) {
     >
       <Image
         className={cn(
-          "rounded-full",
-          isUser ? "order-1" : "border border-black/[0.08] shadow-sm",
+          "object-contain size-8 p-2 bg-background rounded-xl",
+          isUser ? "order-1 bg-fade" : "border border-black/[0.08] shadow-sm",
         )}
-        src={isUser ? "vercel.svg" : "file.svg"}
-        alt={isUser ? "User profile" : "Bart logo"}
+        src={isUser ? "vercel.svg" : "globe.svg"}
+        alt={isUser ? "User profile" : "logo"}
         width={40}
         height={40}
       />
       <div
-        className={cn(isUser ? "bg-muted px-4 py-3 rounded-xl" : "space-y-4")}
+        className={cn(
+          (isUser ? "bg-muted pl-12 py-3 rounded-xl" : "space-y-4 pr-32"),
+          "max-w-[65ch] w-fit"
+        )}
       >
-        <div className="flex flex-col gap-3">
-          <p className="sr-only">{isUser ? "You" : "Bart"} said:</p>
+        <div className="flex flex-col gap-3 text-base break-words whitespace-pre-wrap text-justify last:text-left">
+          <p className="sr-only">{isUser ? "You" : "Assistant"} said:</p>
           {children}
         </div>
         {!isUser && <MessageActions />}
