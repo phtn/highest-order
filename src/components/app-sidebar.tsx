@@ -64,7 +64,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className="bg-fade">
         {/* We only show the first parent group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="pl-3 uppercase h-12 text-sidebar-foreground/50">
+          <SidebarGroupLabel className="pl-3 uppercase h-12 text-sidebar-foreground/50 font-bold">
             {data.navMain[0]?.title}
           </SidebarGroupLabel>
           <SidebarGroupContent className="">
@@ -118,9 +118,11 @@ const MenuContent = (item: NavItem) => {
   return (
     <a
       href={item.url}
-      className="hover:bg-foreground/15 rounded-lg flex items-center px-4 h-[2.5rem]"
+      className="group/menu-content hover:bg-foreground/10 rounded-lg flex items-center px-4 h-[2.5rem]"
     >
-      <span className="text-base tracking-tight font-light">{item.title}</span>
+      <span className="text-base group-hover/menu-content:text-foreground tracking-tight font-medium text-foreground/80">
+        {item.title}
+      </span>
     </a>
   );
 };

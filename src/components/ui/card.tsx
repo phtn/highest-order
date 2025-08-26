@@ -3,7 +3,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { type ComponentProps } from "react";
 
 const variants = cva(
-  "relative z-100 bg-background border-[0.7px] border-foreground/20 dark:border-transparent dark:bg-background/80 overflow-hidden rounded-3xl",
+  "relative z-100 bg-background border-[0.7px] border-foreground/20 dark:border-transparent dark:bg-background/80 overflow-hidden rounded-3xl  after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_1px_2px_0_rgb(0_0_0/.25),inset_0_0.1px_0.5px_1px_rgb(255_255_255/.18)]",
   {
     variants: {
       tone: {

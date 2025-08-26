@@ -207,11 +207,11 @@ const SettingsPanel = ({
       {!open && (
         <Button
           size="icon"
-          variant="outline"
-          className="absolute rounded-full size-8 top-4 right-6 z-100 animate-enter"
+          variant="ghost"
+          className="absolute rounded-full size-8 top-4 right-8 z-100 animate-enter"
           onClick={togglePanel}
         >
-          <Icon name="plus" className="size-4" />
+          <Icon name="px-chevron-right" className="size-4 rotate-180" />
         </Button>
       )}
       <div
@@ -219,14 +219,14 @@ const SettingsPanel = ({
         data-collapsible={state === "collapsed" ? collapsible : ""}
         data-side={side}
         className={cn(
-          "bg-fade group peer hidden md:block text-sidebar-foreground transition-[width] duration-300 ease-in-out",
+          "bg-fade group peer hidden md:block text-sidebar-foreground transition-[width] duration-200 ease-in-out",
           state === "expanded" ? "w-(--settings-width)" : "w-0",
         )}
       >
         <div
           className={cn(
-            "relative h-svh bg-transparent transition-transform duration-300 ease-in-out",
-            "w-(--settings-width) px-4 md:px-6",
+            "relative h-svh bg-transparent transition-transform duration-400 ease-in-out",
+            "w-(--settings-width) px-2 md:pr-4",
             state === "collapsed" &&
               (side === "right" ? "translate-x-full" : "-translate-x-full"),
           )}
@@ -248,8 +248,8 @@ const SettingsPanelContent = () => {
       {/* Sidebar header */}
       <div
         className={cn(
-          "h-[3.75rem] flex items-center justify-between relative",
-          "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
+          "h-16 flex items-center justify-between relative",
+          "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/5 before:via-foreground/10 before:to-foreground/15",
         )}
         style={
           {
@@ -258,13 +258,11 @@ const SettingsPanelContent = () => {
           } as CSSProperties
         }
       >
-        <div className="flex items-center gap-2">
-          <h2 className="text-sm font-medium">Preferences</h2>
-          <Icon
-            name="wave-sine-thin"
-            aria-hidden="true"
-            className="text-muted-foreground/70"
-          />
+        <div className="flex items-center gap-4">
+          <h2 className="text-base font-medium tracking-tighter">
+            Preferences
+          </h2>
+          <Icon name="wave-sine-thin" className="size-5" />
         </div>
         <div className="flex items-center gap-2">
           <Button
@@ -273,7 +271,7 @@ const SettingsPanelContent = () => {
             className="rounded-full"
             onClick={togglePanel}
           >
-            <Icon name="slash" aria-hidden="true" />
+            <Icon name="px-chevron-right" aria-hidden="true" />
           </Button>
         </div>
       </div>

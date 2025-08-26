@@ -8,7 +8,7 @@ export const Wrapper = ({ children }: { children: React.ReactNode }) => {
   return (
     <div
       className={cn(
-        "flex-1 [&>div>div]:h-full w-full border-x-[0.5px] border-t-[0.5px] border-foreground/[0.30] min-[1024px]:rounded-e-3xl bg-background/60",
+        "flex-1 [&>div>div]:h-full w-full border-x-[0.5px] border-t-[0.5px] border-foreground/[0.30] min-[1024px]:rounded-e-3xl bg-background/80",
         "overflow-hidden shadow-lg shadow-foreground/10 mx-4",
         { "md:rounded-t-3xl": isExpanded },
       )}

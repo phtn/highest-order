@@ -45,9 +45,9 @@ export default function Chat() {
             <div
               className={cn(
                 "flex items-center gap-2 -my-2 -me-2",
-                "transition-transform duration-[300ms] translate-x-0",
+                "transition-transform duration-[200ms] translate-x-0 ease-in",
                 {
-                  "-translate-x-[3.25rem]": state === "collapsed",
+                  "-translate-x-10": state === "collapsed",
                 },
               )}
             >
