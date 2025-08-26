@@ -33,8 +33,8 @@ export function ChatMessage({ isUser, children }: ChatMessageProps) {
       />
       <div
         className={cn(
-          (isUser ? "bg-muted pl-12 py-3 rounded-xl" : "space-y-4 pr-32"),
-          "max-w-[65ch] w-fit"
+          isUser ? "bg-muted pl-12 py-3 rounded-xl" : "space-y-4 pr-32",
+          "md:max-w-3xl w-fit",
         )}
       >
         <div className="flex flex-col gap-3 text-base break-words whitespace-pre-wrap text-justify last:text-left">

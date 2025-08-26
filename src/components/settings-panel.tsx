@@ -421,18 +421,18 @@ const SettingsPanelTrigger = ({
   return (
     <Button
       variant="ghost"
-      className="px-2"
+      className="gap-x-0"
       onClick={(event) => {
         onClick?.(event);
         togglePanel();
       }}
     >
       <Icon
-        name="slash"
-        className="text-muted-foreground sm:text-muted-foreground/70 size-5"
+        name="px-chevron-right"
+        className="text-muted-foreground rotate-180 sm:text-muted-foreground/70 size-5"
         aria-hidden="true"
       />
-      <span className="max-sm:sr-only">Settings</span>
+      <span className="max-sm:sr-only tracking-tighter">Settings</span>
     </Button>
   );
 };

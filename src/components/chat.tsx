@@ -31,8 +31,8 @@ export default function Chat() {
     <ScrollArea className={cn("relative h-full w-full")}>
       <div className="h-full flex flex-grow flex-col">
         {/* Header */}
-        <div className="sticky top-0 z-100 bg-background before:absolute before:inset-x-0 before:bottom-0 before:h-px before:bg-gradient-to-r before:from-black/[0.06] before:via-black/10 before:to-black/[0.06]">
-          <div className="py-5 px-4 md:px-6 lg:px-6 flex bg-fade/40 items-center justify-between gap-2">
+        <div className="sticky top-0 z-20 bg-background before:absolute before:inset-x-0 before:bottom-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/15 before:via-foreground/10 before:to-foreground/15">
+          <div className="py-5 px-4 md:px-6 lg:px-6 flex bg-fade/30 items-center justify-between gap-2">
             <Breadcrumb>
               <BreadcrumbList className="sm:gap-1.5">
                 <BreadcrumbItem>
@@ -75,7 +75,7 @@ export default function Chat() {
         </div>
         {/* Chat */}
         <div className="relative grow">
-          <div className="max-w-3xl mx-auto mt-6 space-y-6">
+          <div className="max-w-3xl mx-auto mt-6 space-y-6 portrait:px-4">
             <div className="text-center my-8">
               <div className="inline-flex items-center bg-background rounded-full border border-foreground/20 shadow-xs text-xs font-medium py-1.5 px-3 text-foreground/70">
                 <Icon
@@ -142,12 +142,11 @@ export default function Chat() {
         </div>
         {/* Footer */}
         <div className="sticky bottom-0 pt-4 md:pt-8 z-50">
-          <div className="max-w-3xl mx-auto rounded-2xl pb-4 md:pb-8">
-            <div className="relative rounded-[1.25rem] bg-background border-[0.5px] dark:border-foreground/25 transition-colors focus-within:bg-background/80 focus-within:border-input has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&:has(input:is(:disabled))_*]:pointer-events-none">
+          <div className="max-w-3xl mx-auto rounded-2xl pb-4 md:pb-8 px-4 ">
+            <div className="relative rounded-[1.25rem] bg-vibe/5 border-[0.5px] dark:border-foreground/25 transition-colors focus-within:shadow-xl focus-within:bg-fade/40 backdrop-blur-xl focus-within:border-foreground/10 has-[:disabled]:cursor-not-allowed has-[:disabled]:opacity-50 [&:has(input:is(:disabled))_*]:pointer-events-none">
               <textarea
                 className="flex h-16 w-full bg-transparent px-4 py-3 leading-relaxed text-foreground placeholder:text-foreground/55 font-light focus-visible:outline-none [resize:none] tracking-tight"
-                placeholder="Ask me anything..."
-                aria-label="Enter your prompt"
+                placeholder="Ask anything"
               />
               {/* Textarea buttons */}
               <div className="flex items-center justify-between gap-2 pb-2.5 px-3">
@@ -157,7 +156,7 @@ export default function Chat() {
                     size="icon"
                     variant="outline"
                     className={cn(
-                      "rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 bg-fade/40 hover:shadow-xs transition-[box-shadow]",
+                      "rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 bg-background/90 hover:shadow-xs transition-[box-shadow]",
                     )}
                   >
                     <Icon name="plus" className="text-foreground size-3.5" />
@@ -166,7 +165,7 @@ export default function Chat() {
                   <Button
                     variant="outline"
                     size="icon"
-                    className="rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 hover:bg-background hover:shadow-xs transition-[box-shadow]"
+                    className="rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 hover:bg-background bg-background/90 hover:shadow-xs transition-[box-shadow]"
                   >
                     <Icon name="slashes" className="text-foreground size-3.5" />
 
@@ -184,12 +183,16 @@ export default function Chat() {
                   </Button>
                   <Button
                     className={cn(
-                      "rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 text-foreground hover:shadow-xs transition-[box-shadow]",
-                      " bg-fade hover:bg-fade/70",
-                      "relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_0_1px_0_rgb(0_0_0/.05),inset_0.4px_0.8px_0.0px_0.0_rgb(255_255_255/.35)] after:pointer-events-none",
+                      "rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 text-foreground hover:shadow-sm transition-all",
+                      "bg-fade hover:bg-fade/70 dark:bg-background/50",
+                      "relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_0_1px_0_rgb(0_0_0/.05),inset_0.2px_0.3px_0.0px_0.0_rgb(255_255_255/.20)] after:pointer-events-none",
+                      "active:scale-95",
                     )}
                   >
-                    <Icon name="px-arrow-up" />
+                    <Icon
+                      name="px-arrow-up"
+                      className="size-5 dark:text-vibe/70"
+                    />
                   </Button>
                   {/*
                    */}

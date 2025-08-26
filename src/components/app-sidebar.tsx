@@ -152,7 +152,7 @@ const data: Record<string, NavGroup[]> = {
       items: [
         {
           title: "Sales",
-          url: "#",
+          url: "/",
           icon: "px-chat",
           isActive: true,
         },
@@ -183,13 +183,13 @@ const data: Record<string, NavGroup[]> = {
           icon: "px-bucket",
         },
         {
-          title: "Layout",
-          url: "#",
+          title: "v-Zero",
+          url: "/entry/v0",
           icon: "px-checkbox",
         },
         {
-          title: "Settings",
-          url: "#",
+          title: "OpenRouter",
+          url: "/entry/or",
           icon: "px-close",
         },
       ],
