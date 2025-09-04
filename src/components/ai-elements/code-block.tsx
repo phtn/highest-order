@@ -37,14 +37,14 @@ export const CodeBlock = ({
   <CodeBlockContext.Provider value={{ code }}>
     <div
       className={cn(
-        "relative w-full overflow-hidden rounded-md border bg-background text-foreground",
+        "relative w-full overflow-scroll rounded-md border bg-background text-foreground",
         className,
       )}
       {...props}
     >
       <div className="relative">
         <SyntaxHighlighter
-          className="overflow-hidden dark:hidden"
+          className="overflow-y-scroll dark:hidden"
           codeTagProps={{
             className: "font-mono text-sm",
           }}
@@ -77,6 +77,7 @@ export const CodeBlock = ({
             fontSize: "0.875rem",
             background: "hsl(var(--background))",
             color: "hsl(var(--foreground))",
+            scrollBehavior: "smooth",
           }}
           language={language}
           lineNumberStyle={{

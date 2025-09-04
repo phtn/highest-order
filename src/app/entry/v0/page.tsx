@@ -49,7 +49,7 @@ export default function Home() {
     setChatHistory((prev) => [...prev, { type: "user", content: userMessage }]);
 
     try {
-      const response = await fetch("/api/chat", {
+      const response = await fetch("/api/v0", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

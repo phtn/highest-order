@@ -64,10 +64,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       <SidebarContent className="bg-fade">
         {/* We only show the first parent group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="pl-3 uppercase h-12 text-sidebar-foreground/50 font-bold">
-            {data.navMain[0]?.title}
+          <SidebarGroupLabel className="pl-3 h-10">
+            <h3 className="text-lg tracking-tight font-medium text-gray-900 dark:text-gray-100">
+              {data.navMain[0]?.title}
+            </h3>
           </SidebarGroupLabel>
-          <SidebarGroupContent className="">
+          <SidebarGroupContent className="py-2">
             <SidebarMenu>
               {data.navMain[0] &&
                 data.navMain[0]?.items?.map((item) => (
@@ -178,18 +180,23 @@ const data: Record<string, NavGroup[]> = {
       url: "#",
       items: [
         {
-          title: "Icons",
-          url: "/entry/icons",
+          title: "Reshape",
+          url: "/entry/reshape",
           icon: "px-bucket",
         },
         {
-          title: "v-Zero",
+          title: "Zero",
           url: "/entry/v0",
           icon: "px-checkbox",
         },
         {
-          title: "OpenRouter",
-          url: "/entry/or",
+          title: "xLLM",
+          url: "/entry/llm",
+          icon: "px-close",
+        },
+        {
+          title: "Webhooks",
+          url: "/entry/webhooks",
           icon: "px-close",
         },
       ],

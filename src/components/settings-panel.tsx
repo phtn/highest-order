@@ -28,6 +28,10 @@ import { ScrollArea } from "@/components/ui/scroll-area";
 import { Icon } from "@/lib/icons";
 import { cn } from "@/lib/utils";
 import { motion } from "motion/react";
+import { MODELS as CHAT_MODELS, useChatSettings } from "@/ctx/chat/store";
+import { useVoiceSettings } from "@/ctx/voice/store";
+import { Checkbox } from "@/components/ui/checkbox";
+import { useConversations } from "@/ctx/chat/conversations";
 
 type Collapsible = "none" | "icon" | "content";
 
@@ -228,7 +232,7 @@ const SettingsPanel = ({
             "relative h-svh bg-transparent transition-transform duration-400 ease-in-out",
             "w-(--settings-width) px-2 md:pr-4",
             state === "collapsed" &&
-              (side === "right" ? "translate-x-full" : "-translate-x-full"),
+            (side === "right" ? "translate-x-full" : "-translate-x-full"),
           )}
         >
           <SettingsPanelContent />
@@ -242,6 +246,34 @@ SettingsPanel.displayName = "SettingsPanel";
 const SettingsPanelContent = () => {
   const id = useId();
   const { togglePanel } = useSettingsPanel();
+
+  const {
+    model,
+    webSearch,
+    speechEnabled,
+    setModel,
+    setWebSearch,
+    setSpeechEnabled,
+  } = useChatSettings();
+  const { voice, setVoice } = useVoiceSettings();
+  const { metas, currentId, selectConversation, createConversation } =
+    useConversations();
+
+
+  const assistantLabel = useCallback((alias: string) => {
+    switch (alias.toLowerCase()) {
+      case "sakura":
+        return "Sakura";
+      case "ellie":
+        return "Ellie";
+      case "moody":
+        return "Moody";
+      case "kendall":
+        return "Kendall";
+      default:
+        return alias;
+    }
+  }, []);
 
   return (
     <>
@@ -278,23 +310,76 @@ const SettingsPanelContent = () => {
 
       {/* Sidebar content */}
       <motion.div className="-mt-px whitespace-nowrap">
-        {/* Content group */}
+        {/* Conversations list */}
         <div
           className={cn(
             "py-5 relative transition-all duration-300 ease-in-out",
             "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
           )}
         >
-          <h3 className="text-xs font-medium uppercase text-muted-foreground/80">
-            Chat presets
+          <div className="flex items-center justify-between mb-2">
+            <h3 className="text-xs font-medium uppercase text-muted-foreground/80">
+              Conversations
+            </h3>
+            <Button
+              size="sm"
+              variant="outline"
+              onClick={() => {
+                const name = assistantLabel(voice);
+                createConversation(name);
+              }}
+            >
+              New
+            </Button>
+          </div>
+
+          <div className="space-y-1 w-80 block">
+            {metas.length === 0 && (
+              <div className="text-xs text-muted-foreground px-2">
+                No conversations yet.
+              </div>
+            )}
+            {metas.map((m) => (
+              <button
+                key={m.id}
+                type="button"
+                onClick={() => selectConversation(m.id)}
+                className={cn(
+                  "w-fit text-left rounded-md px-4 py-2 transition-colors",
+                  currentId === m.id ? "bg-muted" : "hover:bg-muted/70",
+                )}
+              >
+                <div className="text-sm font-medium truncate">
+                  <span>{m.assistantName}</span>
+
+                  {/*<span>•</span>*/}
+                  {/*<span>{formatDate(m.updatedAt)}</span>*/}
+                </div>
+                <div className="text-[8px] text-muted-foreground flex gap-2">
+                  {m.id.slice(0, 4)}
+                </div>
+              </button>
+            ))}
+          </div>
+        </div>
+
+        {/* Assistant settings */}
+        <div
+          className={cn(
+            "py-5 relative transition-all duration-300 ease-in-out",
+            "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
+          )}
+        >
+          <h3 className="text-xs font-medium uppercase text-muted-foreground/80 mb-2">
+            Assistant
           </h3>
-          <div className="">
+          <div className="space-y-3">
             {/* Model */}
             <div className="flex h-12 items-center justify-between gap-2">
               <Label htmlFor={`${id}-model`} className="font-normal">
                 Model
               </Label>
-              <Select defaultValue="1">
+              <Select value={model} onValueChange={setModel}>
                 <SelectTrigger
                   id={`${id}-model`}
                   className="bg-muted w-auto max-w-full h-8 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
@@ -305,63 +390,73 @@ const SettingsPanelContent = () => {
                   className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2"
                   align="end"
                 >
-                  <SelectItem value="1">Chat 4.0</SelectItem>
-                  <SelectItem value="7">Chat 1.0</SelectItem>
+                  {CHAT_MODELS.map((m) => (
+                    <SelectItem key={m.value} value={m.value}>
+                      {m.name}
+                    </SelectItem>
+                  ))}
                 </SelectContent>
               </Select>
             </div>
 
-            {/* Writing style */}
+            {/* Web search */}
             <div className="flex h-12 items-center justify-between gap-2">
-              <Label htmlFor={`${id}-writing-style`} className="font-normal">
-                Writing style
+              <Label htmlFor={`${id}-web-search`} className="font-normal">
+                Web search
               </Label>
-              <Select defaultValue="1">
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`${id}-web-search`}
+                  checked={webSearch}
+                  onCheckedChange={(c) => setWebSearch(c === true)}
+                />
+              </div>
+            </div>
+
+            {/* Speech */}
+            <div className="flex h-12 items-center justify-between gap-2">
+              <Label htmlFor={`${id}-speech`} className="font-normal">
+                Speech
+              </Label>
+              <div className="flex items-center gap-2">
+                <Checkbox
+                  id={`${id}-speech`}
+                  checked={speechEnabled}
+                  onCheckedChange={(c) => setSpeechEnabled(c === true)}
+                />
+              </div>
+            </div>
+
+            {/* Voice */}
+            <div className="flex h-12 items-center justify-between gap-2">
+              <Label htmlFor={`${id}-voice`} className="font-normal">
+                Voice
+              </Label>
+              <Select value={voice} onValueChange={setVoice}>
                 <SelectTrigger
-                  id={`${id}-writing-style`}
+                  id={`${id}-voice`}
                   className="bg-muted w-auto max-w-full h-8 py-1 px-2 gap-1 [&_svg]:-me-1 border-none"
                 >
-                  <SelectValue placeholder="Select writing style" />
+                  <SelectValue placeholder="Select voice" />
                 </SelectTrigger>
                 <SelectContent
                   className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2"
                   align="end"
                 >
-                  <SelectItem value="1">Concise</SelectItem>
-                  <SelectItem value="3">Technical</SelectItem>
-                  <SelectItem value="5">Scientific</SelectItem>
-                </SelectContent>
-              </Select>
-            </div>
-
-            {/* Mode */}
-            <div className="flex h-12 items-center justify-between gap-2">
-              <Label htmlFor={`${id}-mode`} className="font-normal">
-                Mode
-              </Label>
-              <Select defaultValue="1">
-                <SelectTrigger
-                  id={`${id}-mode`}
-                  className="bg-muted w-auto max-w-full h-8 py-1 px-2 gap-2 [&_svg]:-me-1 border-none"
-                >
-                  <SelectValue placeholder="Select mode" />
-                </SelectTrigger>
-                <SelectContent
-                  className="[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2"
-                  align="end"
-                >
-                  <SelectItem value="1">Code</SelectItem>
+                  <SelectItem value="ellie">Ellie</SelectItem>
+                  <SelectItem value="sakura">Sakura</SelectItem>
+                  <SelectItem value="moody">Moody</SelectItem>
+                  <SelectItem value="kendall">Kendall</SelectItem>
                 </SelectContent>
               </Select>
             </div>
           </div>
         </div>
 
-        {/* Content group */}
+        {/* Configurations (placeholders for future use) */}
         <div
           className={cn(
             "py-5 relative",
-
             "before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10",
           )}
         >
@@ -369,7 +464,6 @@ const SettingsPanelContent = () => {
             Configurations
           </h3>
           <div className="space-y-3">
-            {/* Temperature */}
             <SliderControl
               minValue={0}
               maxValue={2}
@@ -378,8 +472,6 @@ const SettingsPanelContent = () => {
               step={0.01}
               label="Temperature"
             />
-
-            {/* Maximum length */}
             <SliderControl
               className="[&_input]:w-14"
               minValue={1}
@@ -389,8 +481,6 @@ const SettingsPanelContent = () => {
               step={1}
               label="Maximum length"
             />
-
-            {/* Top P */}
             <SliderControl
               minValue={0}
               maxValue={1}

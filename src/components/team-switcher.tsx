@@ -39,13 +39,15 @@ export function TeamSwitcher({ teams }: TeamSwitcherProps) {
               size="lg"
               className="rounded-xl data-[state=open]:bg-sidebar-accent data-[state=open]:text-sidebar-accent-foreground gap-3 [&>svg]:size-auto"
             >
-              <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden bg-gradient-to-br from-slate-600/80 via-slate-600/40 to-sidebar-primary/20 text-sidebar-primary-foreground relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_0_1px_0_rgb(0_0_0/.05),inset_0.4px_0.4px_0.6px_0.0_rgb(255_255_255/.25)] after:pointer-events-none">
-                {activeTeam && <Icon name="creator" className="size-5" />}
+              <div className="flex aspect-square size-8 items-center justify-center rounded-lg overflow-hidden dark:bg-gradient-to-br from-slate-600/80 via-slate-600/40 to-sidebar-primary/20 text-sidebar-primary-foreground relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_0_1px_0_rgb(0_0_0/.05),inset_0.4px_0.4px_0.6px_0.0_rgb(255_255_255/.25)] after:pointer-events-none">
+                {activeTeam && (
+                  <Icon name="re-up.ph" className="size-7 text-foreground" />
+                )}
                 <div className="bg-orange-100/70 blur-md h-5 w-5 absolute -bottom-3 -right-3" />
               </div>
               <div className="grid flex-1 text-left text-base leading-tight">
                 <span className="truncate font-medium">
-                  {activeTeam?.name ?? "Select a Team"}
+                  {/*{activeTeam?.name ?? "Select a Team"}*/}
                 </span>
               </div>
               <Icon

@@ -2,10 +2,7 @@ import React, { ReactNode } from "react";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
 import { Navbar } from "@/components/navbar";
-import {
-  SettingsPanelProvider,
-  SettingsPanel,
-} from "@/components/settings-panel";
+import { SettingsPanel } from "@/components/settings-panel";
 
 export default function Layout({ children }: { children: React.ReactNode }) {
   return (
@@ -13,12 +10,10 @@ export default function Layout({ children }: { children: React.ReactNode }) {
       <AppSidebar />
       <SidebarInset className="group/sidebar-inset">
         <Navbar />
-        <SettingsPanelProvider>
-          <Container>
-            {children}
-            <SettingsPanel />
-          </Container>
-        </SettingsPanelProvider>
+        <Container>
+          {children}
+          <SettingsPanel />
+        </Container>
       </SidebarInset>
     </SidebarProvider>
   );

@@ -1,0 +1,160 @@
+export const presets = {
+  automaticLayout: true,
+  minimap: { enabled: false },
+  fontSize: 12,
+  fontFamily: "JetBrains Mono NL, monospace",
+  lineNumbersMinChars: 2,
+  overviewRulerBorder: false,
+  letterSpacing: 0.5,
+  padding: {
+    top: 10,
+    bottom: 10,
+  },
+  tabSize: 2,
+  renderLineHighlight: "none",
+  smoothScrolling: true,
+  scrollBeyondLastLine: false,
+  stickyScroll: {
+    enabled: false,
+  },
+  fastScrollSensitivity: 12,
+  mouseWheelScrollSensitivity: 12,
+};
+
+export const ex_async = `"use client";
+
+  import { Icon } from "@/lib/icons";
+  import Image from "next/image";
+  import { useEffect } from "react";
+  import { Effect, Duration, Console } from "effect";
+  import { useRouter } from "next/navigation";
+
+  const runAfter = (fn: VoidFunction, seconds = 3) =>
+    Effect.gen(function* ($) {
+      yield* $(Effect.sleep(Duration.seconds(seconds)));
+      yield* $(Console.log("Effect completed"));
+      return fn();
+    });
+
+  export const Content = () => {
+    const router = useRouter();
+    useEffect(() => {
+      // Run an Effect that waits for seconds then runs the provided callback.
+      // We use runPromise to execute the Effect in the client.
+      Effect.runPromise(runAfter(() => router.push("/entry"), 3));
+    }, []); // eslint-disable-line react-hooks/exhaustive-deps
+
+    return (
+      <main className="flex justify-center size-screen overflow-hidden">
+        <div className="flex flex-col items-center justify-center size-[35rem]">
+          <Icon name="creator" className="size-28 text-foreground/10" />
+          <div className="h-9 text-muted-foreground">Initializing...</div>
+        </div>
+      </main>
+    );
+  };
+
+  export const Bp = () => {
+    return (
+      <div className="font-sans grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20">
+        <main className="flex flex-col gap-[32px] row-start-2 items-center sm:items-start">
+          <Image
+            className="dark:invert"
+            src="/next.svg"
+            alt="Next.js logo"
+            width={180}
+            height={38}
+            priority
+          />
+          <ol className="font-mono list-inside list-decimal text-sm/6 text-center sm:text-left">
+            <li className="mb-2 tracking-[-.01em]">
+              Get started by editing{" "}
+              <code className="bg-black/[.05] dark:bg-white/[.06] font-mono font-semibold px-1 py-0.5 rounded">
+                src/app/page.tsx
+              </code>
+              .
+            </li>
+            <li className="tracking-[-.01em]">
+              Save and see your changes instantly.
+            </li>
+          </ol>
+
+          <div className="flex gap-4 items-center flex-col sm:flex-row">
+            <a
+              className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] font-medium text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:w-auto"
+              href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              <Image
+                className="dark:invert"
+                src="/vercel.svg"
+                alt="Vercel logomark"
+                width={20}
+                height={20}
+              />
+              Deploy now
+            </a>
+            <a
+              className="rounded-full border border-solid border-black/[.1] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-black/[0.05] dark:hover:bg-[#1a1a1a] hover:border-transparent font-medium text-sm sm:text-base h-fit sm:h-12 px-4 sm:px-6 w-full sm:w-auto md:w-fit"
+              href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+              rel="noopener noreferrer"
+              target="_blank"
+            >
+              Read our docs
+            </a>
+          </div>
+        </main>
+        <footer className="row-start-3 flex gap-[24px] flex-wrap items-center justify-center">
+          <a
+            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Icon
+              aria-hidden
+              name="plus"
+              motionprops={{
+                initial: { scale: 0.2, rotate: "-15deg" },
+                animate: { scale: 1, rotate: "0deg" },
+                transition: { type: "spring", visualDuration: 0.4, bounce: 0.4 },
+              }}
+            />
+            Learn
+          </a>
+          <a
+            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              aria-hidden
+              src="/window.svg"
+              alt="Window icon"
+              width={16}
+              height={16}
+            />
+            Examples
+          </a>
+          <a
+            className="flex items-center gap-2 hover:underline hover:underline-offset-4"
+            href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            <Image
+              aria-hidden
+              src="/globe.svg"
+              alt="Globe icon"
+              width={16}
+              height={16}
+            />
+            Go to nextjs.org →
+          </a>
+        </footer>
+      </div>
+    );
+  };
+  `;
