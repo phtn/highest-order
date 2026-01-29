@@ -19,6 +19,7 @@ export async function POST(request: NextRequest) {
       chat = await v0.chats.sendMessage({
         chatId: chatId,
         message,
+        responseMode: 'sync',
       });
     } else {
       // create new chat
@@ -27,10 +28,19 @@ export async function POST(request: NextRequest) {
       });
     }
 
-    return NextResponse.json({
-      id: chat.id,
-      demo: chat.demo,
-    });
+    // Type guard to ensure chat is ChatDetail, not a stream
+    if ('id' in chat && 'demo' in chat) {
+      return NextResponse.json({
+        id: chat.id,
+        demo: chat.demo,
+      });
+    }
+
+    // If it's a stream (shouldn't happen with responseMode: 'sync', but TypeScript needs this)
+    return NextResponse.json(
+      { error: 'Unexpected stream response' },
+      { status: 500 },
+    );
   } catch (error) {
     console.error("V0 API Error:", error);
     return NextResponse.json(

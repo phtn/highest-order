@@ -1,15 +1,12 @@
-"use client";
+'use client'
 
-import Chat from "@/components/chat";
-import { Wrapper } from "@/components/wrapper";
-import { Convex } from "@/ctx/convex";
+import Chat from '@/components/chat'
+import {Wrapper} from '@/components/wrapper'
 
 export const Content = () => {
   return (
-    <Convex>
-      <Wrapper>
-        <Chat />
-      </Wrapper>
-    </Convex>
-  );
-};
+    <Wrapper>
+      <Chat />
+    </Wrapper>
+  )
+}

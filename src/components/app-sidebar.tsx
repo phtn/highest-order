@@ -1,7 +1,8 @@
-"use client";
-import { useCallback } from "react";
+'use client'
+import {useCallback} from 'react'
 
-import { TeamSwitcher } from "@/components/team-switcher";
+import {TeamSwitcher} from '@/components/team-switcher'
+import type {NavGroup, NavItem} from '@/components/types'
 import {
   Sidebar,
   SidebarContent,
@@ -13,40 +14,37 @@ import {
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-} from "@/components/ui/sidebar";
-import type { NavGroup, NavItem } from "@/components/types";
-import { useAppTheme } from "@/hooks/use-theme";
-import { cn } from "@/lib/utils";
-import { Button } from "./ui/button";
-import { Icon } from "@/lib/icons";
+} from '@/components/ui/sidebar'
+import {useAppTheme} from '@/hooks/use-theme'
+import {Icon} from '@/lib/icons'
+import {cn} from '@/lib/utils'
+import {Button} from './ui/button'
 
-export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
-  const [isDark, toggleTheme] = useAppTheme();
+export function AppSidebar({...props}: React.ComponentProps<typeof Sidebar>) {
+  const [isDark, toggleTheme] = useAppTheme()
   const ToggleTheme = useCallback(
     () => (
       <SidebarMenuItem>
         <SidebarMenuButton
           asChild
-          className="group/menu-button h-9 rounded-md [&>svg]:size-auto"
-        >
+          className='group/menu-button h-9 rounded-md [&>svg]:size-auto'>
           <Button
-            variant="ghost"
+            variant='ghost'
             onClick={toggleTheme}
-            className="capitalize w-fit px-2 space-x-2"
-          >
+            className='capitalize w-fit px-2 space-x-2'>
             <Icon
-              name="px-bell"
-              className="bg-orange-200 size-5 rounded-sm text-black"
+              name='px-bell'
+              className='bg-orange-200 size-5 rounded-sm text-black'
             />
-            <span className="space-x-1">
+            <span className='space-x-1'>
               <span
-                className={cn("-italic text-slate-700", {
-                  "font-light italic text-orange-300": isDark,
-                })}
-              >
-                {isDark ? "Light" : "Dark"}
+                suppressHydrationWarning
+                className={cn('-italic text-slate-700', {
+                  'font-light italic text-orange-300': isDark,
+                })}>
+                {isDark ? 'Light' : 'Dark'}
               </span>
-              <span className="opacity-80 tracking-tighter font-extrabold dark:opacity-70">
+              <span className='opacity-80 tracking-tighter font-extrabold dark:opacity-70'>
                 Mode
               </span>
             </span>
@@ -55,30 +53,29 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarMenuItem>
     ),
     [toggleTheme, isDark],
-  );
+  )
   return (
-    <Sidebar {...props} className="!border-none bg-fade">
-      <SidebarHeader className="bg-fade">
+    <Sidebar {...props} className='!border-none bg-fade'>
+      <SidebarHeader className='bg-fade'>
         <TeamSwitcher teams={data.teams} />
       </SidebarHeader>
-      <SidebarContent className="bg-fade">
+      <SidebarContent className='bg-fade'>
         {/* We only show the first parent group */}
         <SidebarGroup>
-          <SidebarGroupLabel className="pl-3 h-10">
-            <h3 className="text-lg tracking-tight font-medium text-gray-900 dark:text-gray-100">
+          <SidebarGroupLabel className='pl-3 h-10'>
+            <h3 className='text-lg tracking-tight font-medium text-gray-900 dark:text-gray-100'>
               {data.navMain[0]?.title}
             </h3>
           </SidebarGroupLabel>
-          <SidebarGroupContent className="py-2">
+          <SidebarGroupContent className='py-2'>
             <SidebarMenu>
               {data.navMain[0] &&
                 data.navMain[0]?.items?.map((item) => (
                   <SidebarMenuItem key={item.title}>
                     <SidebarMenuButton
                       asChild
-                      className="group/menu-button bg-background h-9 data-[active=true]:hover:bg-background data-[active=true]:bg-gradient-to-b data-[active=true]:from-sidebar-primary data-[active=true]:to-sidebar-primary/70 data-[active=true]:shadow-[0_1px_2px_0_rgb(0_0_0/.05),inset_0_1px_0_0_rgb(255_255_255/.12)] [&>svg]:size-auto"
-                      isActive={item.isActive}
-                    >
+                      className='group/menu-button bg-background h-9 data-[active=true]:hover:bg-background data-[active=true]:bg-gradient-to-b data-[active=true]:from-sidebar-primary data-[active=true]:to-sidebar-primary/70 data-[active=true]:shadow-[0_1px_2px_0_rgb(0_0_0/.05),inset_0_1px_0_0_rgb(255_255_255/.12)] [&>svg]:size-auto'
+                      isActive={item.isActive}>
                       <MenuContent {...item} />
                     </SidebarMenuButton>
                   </SidebarMenuItem>
@@ -87,10 +84,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
-      <SidebarFooter className="bg-fade">
+      <SidebarFooter className='bg-fade'>
         {/* Secondary Navigation */}
         <SidebarGroup>
-          <SidebarGroupLabel className="uppercase text-sidebar-foreground/50">
+          <SidebarGroupLabel className='uppercase text-sidebar-foreground/50'>
             {data.navMain[1]?.title}
           </SidebarGroupLabel>
           <SidebarGroupContent>
@@ -99,10 +96,9 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <SidebarMenuItem key={item.title}>
                   <SidebarMenuButton
                     asChild
-                    size="lg"
-                    className="group/menu-button font-medium h-9 [&>svg]:size-auto"
-                    isActive={item.isActive}
-                  >
+                    size='lg'
+                    className='group/menu-button font-medium h-9 [&>svg]:size-auto'
+                    isActive={item.isActive}>
                     <MenuContent {...item} />
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -113,93 +109,92 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         </SidebarGroup>
       </SidebarFooter>
     </Sidebar>
-  );
+  )
 }
 
 const MenuContent = (item: NavItem) => {
   return (
     <a
       href={item.url}
-      className="group/menu-content hover:bg-foreground/10 rounded-lg flex items-center px-4 h-[2.5rem]"
-    >
-      <span className="text-base group-hover/menu-content:text-foreground tracking-tight font-medium text-foreground/80">
+      className='group/menu-content hover:bg-foreground/10 rounded-lg flex items-center px-4 h-[2.5rem]'>
+      <span className='text-base group-hover/menu-content:text-foreground tracking-tight font-medium text-foreground/80'>
         {item.title}
       </span>
     </a>
-  );
-};
+  )
+}
 
 const data: Record<string, NavGroup[]> = {
   teams: [
     {
-      name: "X-69",
-      logo: "https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp2/logo-01_upxvqe.png",
-      url: "/",
+      name: 'X-69',
+      logo: 'https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp2/logo-01_upxvqe.png',
+      url: '/',
     },
     {
-      name: "re-up.ph",
-      logo: "https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp2/logo-01_upxvqe.png",
-      url: "/",
+      name: 're-up.ph',
+      logo: 'https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp2/logo-01_upxvqe.png',
+      url: '/',
     },
     {
-      name: "bigticket.ph",
-      logo: "https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp2/logo-01_upxvqe.png",
-      url: "/",
+      name: 'bigticket.ph',
+      logo: 'https://raw.githubusercontent.com/origin-space/origin-images/refs/heads/main/exp2/logo-01_upxvqe.png',
+      url: '/',
     },
   ],
   navMain: [
     {
-      title: "Playground",
-      url: "#",
+      title: 'Playground',
+      url: '#',
       items: [
         {
-          title: "Sales",
-          url: "/",
-          icon: "px-chat",
+          title: 'Sales',
+          url: '/',
+          icon: 'px-chat',
           isActive: true,
         },
         {
-          title: "Users",
-          url: "#",
-          icon: "px-clock",
+          title: 'Users',
+          url: '#',
+          icon: 'px-clock',
         },
         {
-          title: "Reports",
-          url: "#",
-          icon: "px-chat",
+          title: 'Reports',
+          url: '#',
+          icon: 'px-chat',
         },
         {
-          title: "Analytics",
-          url: "#",
-          icon: "px-ship",
+          title: 'Analytics',
+          url: '#',
+          icon: 'px-ship',
         },
       ],
     },
     {
-      title: "Preferences",
-      url: "#",
+      title: 'Preferences',
+      url: '#',
       items: [
         {
-          title: "Reshape",
-          url: "/entry/reshape",
-          icon: "px-bucket",
+          title: 'Reshape',
+          url: '/entry/reshape',
+          icon: 'px-bucket',
         },
         {
-          title: "Zero",
-          url: "/entry/v0",
-          icon: "px-checkbox",
+          title: 'Zero',
+          url: '/entry/v0',
+          icon: 'px-checkbox',
         },
         {
-          title: "xLLM",
-          url: "/entry/llm",
-          icon: "px-close",
+          title: 'xLLM',
+          url: '/entry/llm',
+          icon: 'px-close',
         },
         {
-          title: "Webhooks",
-          url: "/entry/webhooks",
-          icon: "px-close",
+          title: 'Webhooks',
+          url: '/entry/webhooks',
+          icon: 'px-close',
         },
       ],
     },
   ],
-};
+}

@@ -1,7 +1,10 @@
+import {Convex} from "@/ctx/convex";
+import {ConversationsSync} from "@/ctx/chat/conversations-sync";
+import { SettingsPanelProvider } from "@/components/settings-panel";
+import { ThemeProvider } from "@/components/theme-provider";
+import { VoiceSettingsProvider } from "@/ctx/hume";
 import type { Metadata } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
-import { ThemeProvider } from "@/components/theme-provider";
-import { SettingsPanelProvider } from "@/components/settings-panel";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -30,16 +33,19 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        <ThemeProvider
-          enableSystem
-          attribute="class"
-          defaultTheme="system"
-          disableTransitionOnChange
-        >
-          <SettingsPanelProvider>
-            {children}
-          </SettingsPanelProvider>
-        </ThemeProvider>
+        <Convex>
+          <ConversationsSync />
+          <ThemeProvider
+            enableSystem
+            attribute="class"
+            defaultTheme="system"
+            disableTransitionOnChange
+          >
+            <VoiceSettingsProvider>
+              <SettingsPanelProvider>{children}</SettingsPanelProvider>
+            </VoiceSettingsProvider>
+          </ThemeProvider>
+        </Convex>
       </body>
     </html>
   );

@@ -163,3 +163,38 @@
     }
   }
 }
+
+/* View Transitions: conversation switch */
+.vt-conversation {
+  view-transition-name: llm-conversation;
+}
+
+@keyframes vt-fade-in-up {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes vt-fade-out-down {
+  from {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  to {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+}
+
+::view-transition-old(llm-conversation) {
+  animation: vt-fade-out-down 180ms ease-in both;
+}
+
+::view-transition-new(llm-conversation) {
+  animation: vt-fade-in-up 220ms ease-out both;
+}
