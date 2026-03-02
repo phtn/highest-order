@@ -133,18 +133,25 @@ export const Content = () => {
       hydratingRef.current = false
       return
     }
+    let cancelled = false
     ;(async () => {
       try {
         const saved = await loadConversationMessages(currentId)
-        startTransition(() => setAutoplayMessageId(null))
-        startTransition(() => setMessages(saved))
+        if (cancelled) return
+        startTransition(() => {
+          setAutoplayMessageId(null)
+          setMessages(saved as Parameters<typeof setMessages>[0])
+        })
         prevCountRef.current = saved.length
       } catch {
         // ignore
       } finally {
-        hydratingRef.current = false
+        if (!cancelled) hydratingRef.current = false
       }
     })()
+    return () => {
+      cancelled = true
+    }
   }, [
     currentId,
     bootstrapped,

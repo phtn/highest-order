@@ -219,7 +219,9 @@ export const WithHumeContent = () => {
         const saved = await loadConversationMessages(currentId)
         assistantTextRef.current = ''
         lastPlayedMessageIdRef.current = null
-        startTransition(() => setMessages(saved))
+        startTransition(() =>
+          setMessages(saved as Parameters<typeof setMessages>[0]),
+        )
         prevCountRef.current = saved.length
       } catch {
         // ignore

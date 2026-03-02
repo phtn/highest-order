@@ -1,0 +1,26 @@
+{
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "google/gemini-3-flash-preview"
+      },
+      "models": {
+        "google/gemini-3-flash-preview": {
+          "alias": "gemini-flash"
+        }
+      },
+      "workspace": "/Users/xpriori/.openclaw/workspace",
+      "compaction": {
+        "mode": "default"
+      },
+      "blockStreamingBreak": "message_end",
+      "blockStreamingChunk": {
+        "breakPreference": "paragraph"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  }
+}
