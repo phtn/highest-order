@@ -1,6 +1,7 @@
 'use client'
 
 import SliderControl from '@/components/slider-control'
+import {useEviDebug} from '@/ctx/evi-debug'
 import {Button} from '@/components/ui/button'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Label} from '@/components/ui/label'
@@ -28,6 +29,7 @@ import {useMobile} from '@/hooks/use-mobile'
 import {Icon} from '@/lib/icons'
 import {cn} from '@/lib/utils'
 import {motion} from 'motion/react'
+import { usePathname } from 'next/navigation'
 import {
   type ComponentProps,
   createContext,
@@ -246,9 +248,76 @@ const SettingsPanel = ({
 }
 SettingsPanel.displayName = 'SettingsPanel'
 
-const SettingsPanelContent = () => {
+const EviDebugPanel = () => {
+  const {togglePanel} = useSettingsPanel()
+  const {logs, clear} = useEviDebug()
+
+  return (
+    <>
+      <div
+        className={cn(
+          'h-16 flex items-center justify-between relative',
+          'before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/5 before:via-foreground/10 before:to-foreground/15',
+        )}
+        style={
+          {
+            '--settings-width': SETTINGS_WIDTH,
+            '--settings-width-icon': SETTINGS_WIDTH_ICON,
+          } as CSSProperties
+        }>
+        <div className='flex items-center gap-4'>
+          <h2 className='text-base font-medium tracking-tighter'>
+            Hume EVI Debug
+          </h2>
+          <Icon name='wave-sine-thin' className='size-5' />
+        </div>
+        <div className='flex items-center gap-2'>
+          <Button
+            variant='ghost'
+            size='icon'
+            className='rounded-full'
+            onClick={togglePanel}>
+            <Icon name='px-chevron-right' aria-hidden='true' />
+          </Button>
+        </div>
+      </div>
+      <div
+        className={cn(
+          'py-5 relative -mt-px',
+          'before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10',
+        )}>
+        <div className='flex items-center justify-between mb-2'>
+          <h3 className='text-xs font-medium uppercase text-muted-foreground/80'>
+            Logs
+          </h3>
+          {logs.length > 0 && (
+            <Button size='sm' variant='ghost' onClick={clear}>
+              Clear
+            </Button>
+          )}
+        </div>
+        <div className='rounded-md border border-foreground/10 bg-muted/30 p-2 font-mono text-[10px] leading-relaxed max-h-[calc(100svh-12rem)] overflow-y-auto'>
+          {logs.length === 0 ? (
+            <span className='text-muted-foreground'>
+              Use the chat mic to start EVI. Logs appear here.
+            </span>
+          ) : (
+            logs.map((e, i) => (
+              <div key={i} className='text-foreground/80'>
+                <span className='text-muted-foreground'>{e.ts}</span> {e.msg}
+              </div>
+            ))
+          )}
+        </div>
+      </div>
+    </>
+  )
+}
+
+const LlmSettingsPanelContent = () => {
   const id = useId()
   const {togglePanel} = useSettingsPanel()
+  const {logs, clear} = useEviDebug()
   const {ownerId, setOwnerId} = useOwnerId()
 
   const {
@@ -549,6 +618,38 @@ const SettingsPanelContent = () => {
           </div>
         </div>
 
+        {/* EVI Debug */}
+        <div
+          className={cn(
+            'py-5 relative',
+            'before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10',
+          )}>
+          <div className='flex items-center justify-between mb-2'>
+            <h3 className='text-xs font-medium uppercase text-muted-foreground/80'>
+              EVI Debug
+            </h3>
+            {logs.length > 0 && (
+              <Button size='sm' variant='ghost' onClick={clear}>
+                Clear
+              </Button>
+            )}
+          </div>
+          <div className='rounded-md border border-foreground/10 bg-muted/30 p-2 font-mono text-[10px] leading-relaxed max-h-48 overflow-y-auto'>
+            {logs.length === 0 ? (
+              <span className='text-muted-foreground'>
+                Use the chat mic to start EVI. Logs appear here.
+              </span>
+            ) : (
+              logs.map((e, i) => (
+                <div key={i} className='text-foreground/80'>
+                  <span className='text-muted-foreground'>{e.ts}</span>{' '}
+                  {e.msg}
+                </div>
+              ))
+            )}
+          </div>
+        </div>
+
         {/* Configurations (placeholders for future use) */}
         <div
           className={cn(
@@ -588,6 +689,29 @@ const SettingsPanelContent = () => {
         </div>
       </motion.div>
     </>
+  )
+}
+LlmSettingsPanelContent.displayName = 'LlmSettingsPanelContent'
+
+const SettingsPanelContent = () => {
+  const pathname = usePathname()
+  const {togglePanel} = useSettingsPanel()
+  const isEntryRoot = pathname === '/entry'
+  const isLlmRoute = pathname?.startsWith('/entry/llm')
+
+  if (isEntryRoot) return <EviDebugPanel />
+  if (isLlmRoute) return <LlmSettingsPanelContent />
+  return (
+    <div className='h-16 flex items-center justify-between'>
+      <h2 className='text-base font-medium tracking-tighter'>Settings</h2>
+      <Button
+        variant='ghost'
+        size='icon'
+        className='rounded-full'
+        onClick={togglePanel}>
+        <Icon name='px-chevron-right' aria-hidden='true' />
+      </Button>
+    </div>
   )
 }
 SettingsPanelContent.displayName = 'SettingsPanelContent'

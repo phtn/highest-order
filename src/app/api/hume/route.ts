@@ -1,124 +1,87 @@
-import { hume } from "@/lib/hume";
-import {
-  extractLeadingReactions,
-  stripInlineGestures,
-} from "@/lib/chat/reactions";
-import type {
-  PostedUtterance,
-  SnippetAudioChunk,
-  TtsOutput,
-  VoiceProvider,
-} from "hume/api/resources/tts";
-import type { Stream } from "hume/core";
-import { NextRequest, NextResponse } from "next/server";
+import {hume} from '@/lib/hume'
+import type {VoiceProvider} from 'hume/api/resources/tts'
+import {Readable} from 'stream'
+import {NextRequest, NextResponse} from 'next/server'
 
-type AbortableStream = { abort: () => void };
-const isAbortableStream = (value: unknown): value is AbortableStream => {
-  if (typeof value !== "object" || value === null) return false;
-  if (!("abort" in value)) return false;
-  return typeof (value as { abort?: unknown }).abort === "function";
-};
+export const runtime = 'nodejs'
+
+type HumeTtsBody = {
+  text: string
+  voiceName?: string
+  voiceProvider?: VoiceProvider
+  instant?: boolean
+}
 
 export async function POST(req: NextRequest) {
-  const { text, voiceName, voiceProvider, instant } = (await req.json()) as {
-    text: string;
-    voiceName: string;
-    voiceProvider: VoiceProvider;
-    instant: boolean;
-  };
-
-  if (!text || text.trim() === "") {
-    return NextResponse.json(
-      { error: "Missing or invalid text" },
-      { status: 400 },
-    );
-  }
-
-  if (typeof instant !== "boolean") {
-    return NextResponse.json(
-      { error: "Must specify whether to use instant mode" },
-      { status: 400 },
-    );
-  }
-
-  if (!voiceName && instant) {
-    return NextResponse.json(
-      { error: "If using instant mode, a voice must be specified" },
-      { status: 400 },
-    );
-  }
-
-  let upstreamHumeStream: Stream<SnippetAudioChunk | TtsOutput>;
-
   try {
-    console.log(
-      `[HUME_TTS_PROXY] Requesting TTS stream for voice: ${voiceName}, instant: ${instant}`,
-    );
-    // Removes blocks of code from the text if present.
-    const withoutCodeBlocks = text.replace(/```[\s\S]*?```/g, "").trim();
-    const afterLeading = extractLeadingReactions(withoutCodeBlocks).text;
-    const cleanText = stripInlineGestures(afterLeading);
-    const utterances: PostedUtterance[] = voiceName
-      ? [
-          {
-            text: cleanText,
-            voice: { name: voiceName, provider: voiceProvider },
-          },
-        ]
-      : [{ text: cleanText }];
+    if (!process.env.HUME_API_KEY) {
+      return NextResponse.json(
+        {error: 'Hume API key not configured'},
+        {status: 500},
+      )
+    }
 
-    upstreamHumeStream = await hume.tts.synthesizeJsonStreaming({
-      utterances: utterances,
-      stripHeaders: true,
+    const body = (await req.json()) as HumeTtsBody
+    const {
+      text,
+      voiceName = '',
+      voiceProvider = 'HUME_AI',
+      instant = false,
+    } = body
+
+    if (!text || typeof text !== 'string' || text.trim().length === 0) {
+      return NextResponse.json(
+        {error: 'Text is required'},
+        {status: 400},
+      )
+    }
+
+    const utterances = [
+      {
+        text: text.trim(),
+        ...(voiceName && voiceProvider
+          ? {
+              voice: {name: voiceName, provider: voiceProvider} as const,
+            }
+          : {}),
+      },
+    ]
+
+    const request = {
+      format: {type: 'mp3' as const},
+      numGenerations: 1,
+      utterances,
       instantMode: instant,
-    });
-    console.log("[HUME_TTS_PROXY] Successfully initiated Hume stream.");
-  } catch (err) {
-    console.error("[HUME_TTS_PROXY] Hume API call failed:", err);
-    const errorMessage =
-      err instanceof Error ? err.message : "Failed to initiate TTS stream";
-    const errorDetails = (err instanceof Error && err?.message) || errorMessage;
+    }
+
+    const method = instant ? 'synthesizeFileStreaming' : 'synthesizeFile'
+    const stream = (await hume.tts[method](request, {
+      abortSignal: req.signal,
+    })) as Readable
+    const chunks: Buffer[] = []
+    for await (const chunk of stream) {
+      chunks.push(Buffer.isBuffer(chunk) ? chunk : Buffer.from(chunk))
+    }
+    const audioBuffer = Buffer.concat(chunks)
+
+    return new NextResponse(audioBuffer, {
+      headers: {
+        'Content-Type': 'audio/mpeg',
+        'Content-Length': audioBuffer.byteLength.toString(),
+        'Cache-Control': 'no-store',
+      },
+    })
+  } catch (error) {
+    if ((error as {name?: string})?.name === 'AbortError') {
+      return new NextResponse(null, {status: 499})
+    }
+    console.error('[Hume TTS] Error:', error)
     return NextResponse.json(
-      { error: "Hume API Error", details: errorDetails },
-      { status: 502 },
-    );
+      {
+        error: 'Failed to generate speech',
+        details: error instanceof Error ? error.message : 'Unknown error',
+      },
+      {status: 500},
+    )
   }
-
-  const encoder = new TextEncoder();
-  const readableStream = new ReadableStream({
-    async start(controller) {
-      console.log("[HUME_TTS_PROXY] Client connected, forwarding stream...");
-
-      for await (const chunk of upstreamHumeStream) {
-        const jsonString = JSON.stringify(chunk);
-        const ndjsonLine = jsonString + "\n";
-        const chunkBytes = encoder.encode(ndjsonLine);
-        controller.enqueue(chunkBytes);
-      }
-      console.log("[HUME_TTS_PROXY] Upstream Hume stream finished.");
-      controller.close();
-    },
-    cancel(reason) {
-      console.log(
-        "[HUME_TTS_PROXY] Client disconnected, cancelling upstream Hume stream.",
-        reason,
-      );
-      if (isAbortableStream(upstreamHumeStream)) {
-        upstreamHumeStream.abort();
-        console.log("[HUME_TTS_PROXY] Upstream Hume stream abort() called.");
-      } else {
-        console.warn(
-          "[HUME_TTS_PROXY] Upstream stream object does not expose an abort() method directly. Cancellation might rely on AbortSignal propagation.",
-        );
-      }
-    },
-  });
-
-  return new NextResponse(readableStream, {
-    headers: {
-      "Content-Type": "application/x-ndjson",
-      "Cache-Control": "no-cache",
-      Connection: "keep-alive",
-    },
-  });
 }
