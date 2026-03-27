@@ -3,9 +3,9 @@
 import {Button} from '@/components/ui/button'
 import {useOwnerId} from '@/ctx/chat/owner-store'
 import {useChatSettings} from '@/ctx/chat/store'
+import {Icon} from '@/lib/icons'
 import {cn} from '@/lib/utils'
 import {useMutation, useQuery} from 'convex/react'
-import {Pause, Play, Volume2} from 'lucide-react'
 import {
   startTransition,
   useCallback,
@@ -13,6 +13,7 @@ import {
   useMemo,
   useRef,
   useState,
+  ViewTransition,
 } from 'react'
 import {api} from '../../../convex/_generated/api'
 import type {Id} from '../../../convex/_generated/dataModel'
@@ -32,6 +33,7 @@ type AssistantMessageAudioProps = {
   text: string
   voice?: string
   autoplay?: boolean
+  isLastMessage?: boolean
 }
 
 type UploadResponse = {storageId: string}
@@ -48,6 +50,7 @@ export const AssistantMessageAudio = ({
   text,
   voice,
   autoplay = false,
+  isLastMessage = false,
 }: AssistantMessageAudioProps) => {
   const {ownerId} = useOwnerId()
   const {speechEnabled} = useChatSettings()
@@ -66,6 +69,7 @@ export const AssistantMessageAudio = ({
   const [error, setError] = useState<string | null>(null)
   const [textHash, setTextHash] = useState<string | null>(null)
   const [isPlaying, setIsPlaying] = useState(false)
+  const [hasPlayed, setHasPlayed] = useState(false)
 
   const normalizedText = useMemo(() => text.trim(), [text])
 
@@ -89,11 +93,13 @@ export const AssistantMessageAudio = ({
     }
   }, [normalizedText, voice])
 
-  const hasValidAudio =
-    !!audioInfo?.url &&
-    (textHash === null ||
-      audioInfo?.textHash === null ||
-      audioInfo.textHash === textHash)
+  const hasPlayableAudio = !!audioInfo?.url
+  const needsRegeneration =
+    isLastMessage &&
+    hasPlayableAudio &&
+    textHash !== null &&
+    audioInfo?.textHash !== null &&
+    audioInfo.textHash !== textHash
 
   const canGenerate = speechEnabled && normalizedText.length > 0
 
@@ -177,15 +183,27 @@ export const AssistantMessageAudio = ({
   useEffect(() => {
     if (!autoplay) return
     if (!canGenerate) return
-    if (hasValidAudio) return
     if (isGenerating) return
+    // Only generate audio for the last message in the conversation when speech is enabled
+    // or when the voice changes.
+    if (!isLastMessage) return
+    if (hasPlayableAudio && !needsRegeneration) return
     void generateAndStore()
-  }, [autoplay, canGenerate, generateAndStore, hasValidAudio, isGenerating])
+  }, [
+    autoplay,
+    canGenerate,
+    generateAndStore,
+    hasPlayableAudio,
+    isGenerating,
+    isLastMessage,
+    needsRegeneration,
+  ])
 
   // Autoplay once we have a playable URL.
   useEffect(() => {
     if (!autoplay) return
-    if (!hasValidAudio) return
+    if (!hasPlayableAudio) return
+    if (needsRegeneration) return
     const el = audioRef.current
     if (!el || !audioInfo?.url) return
     // Reset to the start for deterministic autoplay.
@@ -193,12 +211,15 @@ export const AssistantMessageAudio = ({
     void el.play().catch(() => {
       // autoplay may be blocked; ignore
     })
-  }, [autoplay, audioInfo?.url, hasValidAudio])
+  }, [autoplay, audioInfo?.url, hasPlayableAudio, needsRegeneration])
 
   useEffect(() => {
     const el = audioRef.current
     if (!el) return
-    const onPlay = () => setIsPlaying(true)
+    const onPlay = () => {
+      setIsPlaying(true)
+      if (!hasPlayed) setHasPlayed(true)
+    }
     const onPause = () => setIsPlaying(false)
     const onEnded = () => setIsPlaying(false)
     el.addEventListener('play', onPlay)
@@ -209,54 +230,58 @@ export const AssistantMessageAudio = ({
       el.removeEventListener('pause', onPause)
       el.removeEventListener('ended', onEnded)
     }
-  }, [])
+  }, [hasPlayed])
 
-  if (!speechEnabled && !hasValidAudio) return null
+  if (!speechEnabled && !hasPlayableAudio) return null
 
   return (
-    <div className='mt-2 flex flex-col gap-2'>
+    <div className='flex flex-col bg-background/40'>
       <div className='flex items-center gap-2'>
-        <Button
-          type='button'
-          size='sm'
-          variant='outline'
-          className={cn('h-8 px-2.5')}
-          disabled={!hasValidAudio}
-          onClick={() => {
-            const el = audioRef.current
-            if (!el) return
-            if (el.paused) void el.play().catch(() => {})
-            else el.pause()
-          }}>
-          {isPlaying ? (
-            <Pause className='size-3.5' />
-          ) : (
-            <Play className='size-3.5' />
+        <ViewTransition>
+          {!isGenerating && (
+            <Button
+              size='sm'
+              type='button'
+              variant='ghost'
+              className={cn('h-8 px-2.5 rounded-none hover:bg-secondary/50!')}
+              disabled={!hasPlayableAudio}
+              onClick={() => {
+                const el = audioRef.current
+                if (!el) return
+                if (el.paused) void el.play().catch(() => {})
+                else el.pause()
+              }}>
+              <Icon
+                name={isPlaying ? 'spinners-voice' : 'px-forward'}
+                className='size-3.5 dark:text-orange-300'
+              />
+              <span className='sr-only'>{isPlaying ? 'Pause' : 'Play'}</span>
+            </Button>
           )}
-          <span className='sr-only'>{isPlaying ? 'Pause' : 'Play'}</span>
-        </Button>
+        </ViewTransition>
 
-        {!hasValidAudio && (
-          <Button
-            type='button'
-            size='sm'
-            variant='secondary'
-            className={cn('h-8 px-2.5')}
-            disabled={!canGenerate || isGenerating}
-            onClick={() => void generateAndStore()}>
-            <Volume2 className='size-3.5' />
-            <span className='ml-2 text-xs'>
-              {isGenerating ? 'Generating…' : 'Generate audio'}
-            </span>
-          </Button>
-        )}
+        <ViewTransition>
+          {(!hasPlayableAudio || needsRegeneration) && (
+            <Button
+              type='button'
+              size='sm'
+              variant='secondary'
+              className={cn('h-8 px-2.5')}
+              disabled={!canGenerate || isGenerating}
+              onClick={() => void generateAndStore()}>
+              <Icon name='spinners-3-dots-move' className='size-3.5' />
+              <span className='ml-2 text-xs'>
+                {isGenerating ? 'Generating…' : 'Generate audio'}
+              </span>
+            </Button>
+          )}
+        </ViewTransition>
       </div>
-
       <audio
         ref={audioRef}
         controls
         preload='none'
-        src={hasValidAudio ? (audioInfo?.url ?? undefined) : undefined}
+        src={hasPlayableAudio ? (audioInfo?.url ?? undefined) : undefined}
         className='hidden'
       />
 

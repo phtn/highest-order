@@ -1,5 +1,6 @@
 'use client'
 
+import {AssistantMessageAudio} from '@/components/ai-elements/assistant-message-audio'
 import {
   Conversation,
   ConversationContent,
@@ -9,7 +10,6 @@ import {Loader} from '@/components/ai-elements/loader'
 import {Message, MessageContent} from '@/components/ai-elements/message'
 import {
   PromptInput,
-  PromptInputButton,
   PromptInputSubmit,
   PromptInputTextarea,
   PromptInputToolbar,
@@ -22,17 +22,24 @@ import {
 } from '@/components/ai-elements/reasoning'
 import {Response} from '@/components/ai-elements/response'
 import {SettingsPanelTrigger} from '@/components/settings-panel'
-import {AssistantMessageAudio} from '@/components/ai-elements/assistant-message-audio'
 import {useConversations} from '@/ctx/chat/conversations'
 import {useChatSettings} from '@/ctx/chat/store'
 import {useVoiceSettings} from '@/ctx/voice/store'
 import {extractLeadingReactions} from '@/lib/chat/reactions'
 import {useChat} from '@ai-sdk/react'
-import {Mic, Square} from 'lucide-react'
-import {startTransition, useCallback, useEffect, useRef, useState} from 'react'
+import {
+  startTransition,
+  SubmitEvent,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from 'react'
 
 import {Wrapper} from '@/components/wrapper'
 import {useSpeechToText} from '@/hooks/use-speech-to-text'
+import {Icon} from '@/lib/icons'
+import {cn} from '@/lib/utils'
 
 type Part = {type: string; [key: string]: unknown}
 
@@ -77,6 +84,10 @@ export const Content = () => {
 
   const assistantLabel = useCallback((alias: string) => {
     switch (alias.toLowerCase()) {
+      case 'nzhu':
+        return 'Nicole'
+      case 'joss':
+        return 'Joss'
       case 'sakura':
         return 'Sakura'
       case 'ellie':
@@ -105,7 +116,9 @@ export const Content = () => {
   const hydratingRef = useRef<boolean>(true)
   const prevCountRef = useRef<number>(0)
   const persistTimerRef = useRef<number | null>(null)
-  const [autoplayMessageId, setAutoplayMessageId] = useState<string | null>(null)
+  const [autoplayMessageId, setAutoplayMessageId] = useState<string | null>(
+    null,
+  )
 
   // Cleanup on unmount
   useEffect(() => {
@@ -217,7 +230,7 @@ export const Content = () => {
     prevCountRef.current = curr
   }, [messages, currentId, renameConversation])
 
-  const handleSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: SubmitEvent) => {
     e.preventDefault()
 
     if (input.trim()) {
@@ -256,9 +269,21 @@ export const Content = () => {
     },
   })
 
+  useEffect(() => {
+    console.log('status:', status, `& ${isSupported}`)
+  }, [isSupported, status])
+
+  let latestAssistantMessageId: string | null = null
+  for (let i = messages.length - 1; i >= 0; i -= 1) {
+    if (messages[i].role === 'assistant') {
+      latestAssistantMessageId = messages[i].id
+      break
+    }
+  }
+
   return (
     <Wrapper>
-      <div className='max-w-4xl mx-auto p-6 relative size-full'>
+      <div className='max-w-6xl mx-auto p-6 relative size-full'>
         <div className='flex flex-col h-full'>
           <Conversation className='h-full'>
             <ConversationContent className='vt-conversation'>
@@ -274,7 +299,10 @@ export const Content = () => {
                           return (
                             <div
                               key={`${message.id}-${i}`}
-                              className='flex flex-col gap-2'>
+                              className={cn(
+                                'px-4 pt-3 pb-2 flex flex-col gap-2',
+                                {'py-3': message.role === 'user'},
+                              )}>
                               {reactions.length > 0 && (
                                 <div className='flex flex-wrap gap-1.5'>
                                   {reactions.map((r, idx) => (
@@ -307,13 +335,17 @@ export const Content = () => {
                         return null
                       })}
                       {message.role === 'assistant' &&
-                        (extractTextFromParts(message.parts).trim().length > 0 ? (
+                        (extractTextFromParts(message.parts).trim().length >
+                        0 ? (
                           <AssistantMessageAudio
                             conversationId={currentId || 'default'}
                             messageId={message.id}
                             text={extractTextFromParts(message.parts)}
                             voice={voice}
                             autoplay={autoplayMessageId === message.id}
+                            isLastMessage={
+                              latestAssistantMessageId === message.id
+                            }
                           />
                         ) : null)}
                     </MessageContent>
@@ -332,31 +364,45 @@ export const Content = () => {
             />
             <PromptInputToolbar>
               <PromptInputTools>
-                <PromptInputButton
-                  className='w-8'
-                  aria-label={
-                    isListening ? 'Stop dictation' : 'Start dictation'
-                  }
-                  disabled={!isSupported || status === 'streaming'}
-                  onClick={() => {
-                    if (isListening) stopListening()
-                    else start()
-                  }}>
-                  {isListening ? (
-                    <Square className='size-3.5' />
-                  ) : (
-                    <Mic className='size-3.5' />
-                  )}
-                </PromptInputButton>
                 <SettingsPanelTrigger />
               </PromptInputTools>
-              <PromptInputSubmit disabled={!input} status={status} />
+              <PromptInputSubmit
+                type={input.trim() ? 'submit' : 'button'}
+                disabled={
+                  input.trim()
+                    ? status === 'streaming'
+                    : !isSupported || status === 'streaming'
+                }
+                aria-label={
+                  input.trim()
+                    ? 'Send message'
+                    : isListening
+                      ? 'Stop dictation'
+                      : 'Start dictation'
+                }
+                onClick={
+                  input.trim()
+                    ? undefined
+                    : () => {
+                        if (isListening) stopListening()
+                        else start()
+                      }
+                }
+                status={status}>
+                {input.trim() ? (
+                  <Icon name='px-arrow-up' className='size-5' />
+                ) : (
+                  <Icon
+                    name={isListening ? 'spinners-voice' : 'voice'}
+                    className='size-5'
+                  />
+                )}
+              </PromptInputSubmit>
             </PromptInputToolbar>
             {error && (
               <p className='px-4 pb-2 text-xs text-foreground/60'>{error}</p>
             )}
           </PromptInput>
-
         </div>
       </div>
     </Wrapper>

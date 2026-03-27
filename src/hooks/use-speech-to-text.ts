@@ -28,7 +28,7 @@ type SpeechRecognitionErrorEventLike = {
   readonly message?: string
 }
 
-type SpeechRecognitionLike = {
+export type SpeechRecognitionLike = {
   lang: string
   continuous: boolean
   interimResults: boolean
@@ -48,16 +48,17 @@ type SpeechRecognitionLike = {
 
 type SpeechRecognitionConstructorLike = new () => SpeechRecognitionLike
 
-const getSpeechRecognitionConstructor = (): SpeechRecognitionConstructorLike | null => {
-  if (typeof window === 'undefined') return null
+export const getSpeechRecognitionConstructor =
+  (): SpeechRecognitionConstructorLike | null => {
+    if (typeof window === 'undefined') return null
 
-  const w = window as unknown as {
-    SpeechRecognition?: SpeechRecognitionConstructorLike
-    webkitSpeechRecognition?: SpeechRecognitionConstructorLike
+    const w = window as unknown as {
+      SpeechRecognition?: SpeechRecognitionConstructorLike
+      webkitSpeechRecognition?: SpeechRecognitionConstructorLike
+    }
+
+    return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null
   }
-
-  return w.SpeechRecognition ?? w.webkitSpeechRecognition ?? null
-}
 
 export type UseSpeechToTextOptions = {
   lang?: string

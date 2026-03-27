@@ -8,11 +8,12 @@ import {
   SelectTrigger,
   SelectValue,
 } from '@/components/ui/select'
+import {Icon} from '@/lib/icons'
 import {cn} from '@/lib/utils'
 import type {ChatStatus} from 'ai'
-import {Loader2Icon, SendIcon, SquareIcon, XIcon} from 'lucide-react'
+import {Loader2Icon, SquareIcon, XIcon} from 'lucide-react'
 import type {ComponentProps, HTMLAttributes, KeyboardEventHandler} from 'react'
-import {Children, forwardRef} from 'react'
+import {Children, forwardRef, ViewTransition} from 'react'
 
 export type PromptInputProps = HTMLAttributes<HTMLFormElement>
 
@@ -55,50 +56,50 @@ export const PromptInputTextarea = forwardRef<
     },
     ref,
   ) => {
-  const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
-    if (e.key === 'Enter') {
-      // Don't submit if IME composition is in progress
-      if (e.nativeEvent.isComposing) {
-        return
-      }
+    const handleKeyDown: KeyboardEventHandler<HTMLTextAreaElement> = (e) => {
+      if (e.key === 'Enter') {
+        // Don't submit if IME composition is in progress
+        if (e.nativeEvent.isComposing) {
+          return
+        }
 
-      if (e.shiftKey) {
-        // Allow newline
-        return
-      }
+        if (e.shiftKey) {
+          // Allow newline
+          return
+        }
 
-      // Submit on Enter (without Shift)
-      e.preventDefault()
-      const form = e.currentTarget.form
-      if (form) {
-        form.requestSubmit()
+        // Submit on Enter (without Shift)
+        e.preventDefault()
+        const form = e.currentTarget.form
+        if (form) {
+          form.requestSubmit()
+        }
       }
     }
-  }
 
-  return (
-    <textarea
-      ref={ref}
-      // className={cn(
-      //   "w-full resize-none rounded-none border-none p-3 shadow-none outline-none ring-0",
-      //   "field-sizing-content max-h-[6lh] bg-transparent dark:bg-transparent",
-      //   "focus-visible:ring-0",
-      //   className,
-      // )}
-      className={cn(
-        'flex h-16 w-full bg-transparent px-4 py-3 leading-relaxed text-foreground placeholder:text-slate-500 dark:placeholder:text-zinc-400 font-light focus-visible:outline-none [resize:none] tracking-tight',
-        // 'border-none flex h-16 w-full bg-transparent px-4 py-3 leading-relaxed text-foreground placeholder:text-foreground outline-0 ring-0 font-light focus-within:ring-0 focus-within:border-foreground focus-visible:outline-none [resize:none] tracking-tight',
-        className,
-      )}
-      name='message'
-      onChange={(e) => {
-        onChange?.(e)
-      }}
-      onKeyDown={handleKeyDown}
-      placeholder={placeholder}
-      {...props}
-    />
-  )
+    return (
+      <textarea
+        ref={ref}
+        // className={cn(
+        //   "w-full resize-none rounded-none border-none p-3 shadow-none outline-none ring-0",
+        //   "field-sizing-content max-h-[6lh] bg-transparent dark:bg-transparent",
+        //   "focus-visible:ring-0",
+        //   className,
+        // )}
+        className={cn(
+          'flex h-16 w-full bg-transparent px-4 py-3 leading-relaxed text-foreground placeholder:text-slate-500 dark:placeholder:text-zinc-400 font-light focus-visible:outline-none [resize:none] tracking-tight',
+          // 'border-none flex h-16 w-full bg-transparent px-4 py-3 leading-relaxed text-foreground placeholder:text-foreground outline-0 ring-0 font-light focus-within:ring-0 focus-within:border-foreground focus-visible:outline-none [resize:none] tracking-tight',
+          className,
+        )}
+        name='message'
+        onChange={(e) => {
+          onChange?.(e)
+        }}
+        onKeyDown={handleKeyDown}
+        placeholder={placeholder}
+        {...props}
+      />
+    )
   },
 )
 PromptInputTextarea.displayName = 'PromptInputTextarea'
@@ -176,7 +177,8 @@ export const PromptInputSubmit = ({
   children,
   ...props
 }: PromptInputSubmitProps) => {
-  let Icn = <SendIcon className='size-4' />
+  const defaultIdleIcon = <Icon name='px-arrow-up' className='size-4' />
+  let Icn = children ?? defaultIdleIcon
 
   if (status === 'submitted') {
     Icn = <Loader2Icon className='size-4 animate-spin' />
@@ -196,10 +198,10 @@ export const PromptInputSubmit = ({
         className,
       )}
       size={size}
-      type='submit'
+      type={props.type}
       variant={variant}
       {...props}>
-      {children ?? Icn}
+      <ViewTransition>{Icn}</ViewTransition>
     </Button>
   )
 }

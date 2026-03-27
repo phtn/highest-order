@@ -1,7 +1,6 @@
 'use client'
 
 import SliderControl from '@/components/slider-control'
-import {useEviDebug} from '@/ctx/evi-debug'
 import {Button} from '@/components/ui/button'
 import {Checkbox} from '@/components/ui/checkbox'
 import {Label} from '@/components/ui/label'
@@ -24,12 +23,13 @@ import {
   isInstructionsPreset,
   useChatSettings,
 } from '@/ctx/chat/store'
+import {useEviDebug} from '@/ctx/evi-debug'
 import {useVoiceSettings} from '@/ctx/voice/store'
 import {useMobile} from '@/hooks/use-mobile'
 import {Icon} from '@/lib/icons'
 import {cn} from '@/lib/utils'
 import {motion} from 'motion/react'
-import { usePathname } from 'next/navigation'
+import {usePathname} from 'next/navigation'
 import {
   type ComponentProps,
   createContext,
@@ -364,6 +364,8 @@ const LlmSettingsPanelContent = () => {
 
   const assistantLabel = useCallback((alias: string) => {
     switch (alias.toLowerCase()) {
+      case 'joss':
+        return 'Joss'
       case 'sakura':
         return 'Sakura'
       case 'ellie':
@@ -538,10 +540,12 @@ const LlmSettingsPanelContent = () => {
                   className='[&_*[role=option]>span]:end-2 [&_*[role=option]>span]:start-auto [&_*[role=option]]:pe-8 [&_*[role=option]]:ps-2'
                   align='end'>
                   <SelectItem value='ellie'>Ellie</SelectItem>
+                  <SelectItem value='joss'>Joss</SelectItem>
                   <SelectItem value='sakura'>Sakura</SelectItem>
                   <SelectItem value='moody'>Moody</SelectItem>
                   <SelectItem value='kendall'>Kendall</SelectItem>
                   <SelectItem value='natalie'>Natalie</SelectItem>
+                  <SelectItem value='nzhu'>Nicole</SelectItem>
                 </SelectContent>
               </Select>
             </div>
@@ -642,8 +646,7 @@ const LlmSettingsPanelContent = () => {
             ) : (
               logs.map((e, i) => (
                 <div key={i} className='text-foreground/80'>
-                  <span className='text-muted-foreground'>{e.ts}</span>{' '}
-                  {e.msg}
+                  <span className='text-muted-foreground'>{e.ts}</span> {e.msg}
                 </div>
               ))
             )}

@@ -1,8 +1,8 @@
-import {lmnt} from '@/lib/lmnt/index'
 import {
   extractLeadingReactions,
   stripInlineGestures,
 } from '@/lib/chat/reactions'
+import {lmnt} from '@/lib/lmnt/index'
 import {NextRequest, NextResponse} from 'next/server'
 
 export const runtime = 'nodejs'
@@ -17,6 +17,8 @@ const FRIENDLY_TO_LMNT: Record<string, string> = {
   ellie: process.env.NEXT_PUBLIC_ELLIE_ID || DEFAULT_VOICE_ID,
   kendal: process.env.NEXT_PUBLIC_KENDALL_ID || DEFAULT_VOICE_ID,
   moody: process.env.NEXT_PUBLIC_MOODY_ID || DEFAULT_VOICE_ID,
+  joss: process.env.NEXT_PUBLIC_JOSS_ID || DEFAULT_VOICE_ID,
+  nzhu: process.env.NEXT_PUBLIC_NZHU_ID || DEFAULT_VOICE_ID,
 }
 
 export async function POST(request: NextRequest) {

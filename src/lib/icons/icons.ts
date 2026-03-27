@@ -556,6 +556,18 @@ export const icons = {
     viewBox: `0 0 24 24`,
     set: `pixelarticons`,
   },
+  'px-forward': {
+    symbol:
+      '<path fill="currentColor" d="M13 7H3v2h10zm8 4h-2V9h-2V7h-2v2h2v2H3v2h14v2h-2v2h2v-2h2v-2h2zM3 15h10v2H3z"/>',
+    viewBox: '0 0 24 24',
+    set: 'pixelarticons',
+  },
+  'spinners-voice': {
+    symbol:
+      '<rect width="2.8" height="12" x="1" y="6" fill="currentColor"><animate attributeName="y" begin="SVGKWB9Ob0W.begin+0.4s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="6;1;6"/><animate attributeName="height" begin="SVGKWB9Ob0W.begin+0.4s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="12;22;12"/></rect><rect width="2.8" height="12" x="5.8" y="6" fill="currentColor"><animate attributeName="y" begin="SVGKWB9Ob0W.begin+0.2s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="6;1;6"/><animate attributeName="height" begin="SVGKWB9Ob0W.begin+0.2s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="12;22;12"/></rect><rect width="2.8" height="12" x="10.6" y="6" fill="currentColor"><animate id="SVGKWB9Ob0W" attributeName="y" begin="0;SVGCkSt6baQ.end-0.1s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="6;1;6"/><animate attributeName="height" begin="0;SVGCkSt6baQ.end-0.1s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="12;22;12"/></rect><rect width="2.8" height="12" x="15.4" y="6" fill="currentColor"><animate attributeName="y" begin="SVGKWB9Ob0W.begin+0.2s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="6;1;6"/><animate attributeName="height" begin="SVGKWB9Ob0W.begin+0.2s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="12;22;12"/></rect><rect width="2.8" height="12" x="20.2" y="6" fill="currentColor"><animate id="SVGCkSt6baQ" attributeName="y" begin="SVGKWB9Ob0W.begin+0.4s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="6;1;6"/><animate attributeName="height" begin="SVGKWB9Ob0W.begin+0.4s" calcMode="spline" dur="0.6s" keySplines=".14,.73,.34,1;.65,.26,.82,.45" values="12;22;12"/></rect>',
+    viewBox: '0 0 24 24',
+    set: 'svg-spinners',
+  },
 }
 
 /*
