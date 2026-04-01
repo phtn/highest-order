@@ -3,7 +3,21 @@ import {convertToModelMessages, streamText} from 'ai'
 import {NextResponse} from 'next/server'
 import {presets} from './presets'
 
-type InstructionsPreset = 'general' | 'extreme' | 'ultra' | 'hyper' | 'custom'
+type InstructionsPreset =
+  | 'general'
+  | 'extreme'
+  | 'ultra'
+  | 'hyper'
+  | 'asmr'
+  | 'custom'
+
+const isInstructionsPreset = (value: unknown): value is InstructionsPreset =>
+  value === 'general' ||
+  value === 'extreme' ||
+  value === 'ultra' ||
+  value === 'hyper' ||
+  value === 'asmr' ||
+  value === 'custom'
 
 const presetSystem = (
   preset: InstructionsPreset,
@@ -16,6 +30,8 @@ const presetSystem = (
       return presets.ultra.join('\n')
     case 'hyper':
       return presets.hyper.join('\n')
+    case 'asmr':
+      return presets.asmr.join('\n')
     case 'custom': {
       const trimmed = (custom ?? '').trim()
       if (trimmed.length === 0) return 'Be helpful, safe, and direct.'
@@ -34,13 +50,16 @@ export async function POST(req: Request) {
     const body = await req.json()
     const {
       messages,
-      instructionsPreset = 'general',
+      instructionsPreset = 'asmr',
       customInstructions,
       temperature = 0.7,
       topP = 0.9,
       topK = 10,
       maxOutputTokens = 2048,
     } = body
+    const selectedPreset = isInstructionsPreset(instructionsPreset)
+      ? instructionsPreset
+      : 'asmr'
 
     if (!messages || !Array.isArray(messages) || messages.length === 0) {
       return NextResponse.json(
@@ -60,7 +79,7 @@ export async function POST(req: Request) {
     const modelMessages = await convertToModelMessages(messages)
 
     const response = streamText({
-      system: presetSystem(instructionsPreset, customInstructions),
+      system: presetSystem(selectedPreset, customInstructions),
       model: cohere('command-a-03-2025'),
       messages: modelMessages,
       maxOutputTokens,

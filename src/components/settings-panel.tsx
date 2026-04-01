@@ -556,7 +556,7 @@ const LlmSettingsPanelContent = () => {
                 Instructions
               </Label>
               <Select
-                value={instructionsPreset}
+                value={instructionsPreset ?? 'asmr'}
                 onValueChange={(v) => {
                   if (!isInstructionsPreset(v)) return
                   setWithTransition(() => {
@@ -625,7 +625,7 @@ const LlmSettingsPanelContent = () => {
         {/* EVI Debug */}
         <div
           className={cn(
-            'py-5 relative',
+            'hidden py-5 relative',
             'before:absolute before:inset-x-0 before:top-0 before:h-[0.5px] before:bg-gradient-to-r before:from-foreground/10 before:via-foreground/15 before:to-foreground/10',
           )}>
           <div className='flex items-center justify-between mb-2'>

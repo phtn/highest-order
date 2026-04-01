@@ -192,7 +192,7 @@ export const PromptInputSubmit = ({
     <Button
       className={cn(
         'rounded-lg size-8 border-[0.8px] border-foreground/15 hover:border-foreground/25 text-foreground hover:shadow-sm transition-all',
-        'bg-fade hover:bg-fade/70 dark:bg-background/50',
+        'disabled:bg-fade bg-fade/70 hover:bg-fade/70 dark:bg-background/50',
         'relative after:rounded-[inherit] after:absolute after:inset-0 after:shadow-[0_0_1px_0_rgb(0_0_0/.05),inset_0.2px_0.3px_0.0px_0.0_rgb(255_255_255/.20)] after:pointer-events-none',
         'active:scale-95',
         className,

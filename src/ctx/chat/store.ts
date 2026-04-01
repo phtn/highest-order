@@ -27,6 +27,7 @@ export type InstructionsPreset =
   | 'extreme'
   | 'ultra'
   | 'hyper'
+  | 'asmr'
   | 'custom'
 
 export const INSTRUCTION_PRESETS: ReadonlyArray<{
@@ -37,6 +38,7 @@ export const INSTRUCTION_PRESETS: ReadonlyArray<{
   {value: 'extreme', name: 'XXXtreme'},
   {value: 'ultra', name: 'Ultra'},
   {value: 'hyper', name: 'Hyper'},
+  {value: 'asmr', name: 'ASMR'},
   {value: 'custom', name: 'Custom'},
 ] as const
 
@@ -51,7 +53,7 @@ const defaults: ChatSettingsValues = {
   model: MODELS[0].value,
   webSearch: false,
   speechEnabled: true,
-  instructionsPreset: 'general',
+  instructionsPreset: 'asmr',
   customInstructions: '',
 }
 

@@ -28,10 +28,15 @@ export type ChatEviProps = {
 
 type ChatProps = {
   evi?: ChatEviProps
-  configError?: boolean
+  configError?: string | null
+  isConfigLoading?: boolean
 }
 
-export default function Chat({evi, configError = false}: ChatProps) {
+export default function Chat({
+  evi,
+  configError = null,
+  isConfigLoading = false,
+}: ChatProps) {
   const messagesEndRef = useRef<HTMLDivElement>(null)
   const {state} = useSettingsPanel()
 
@@ -50,8 +55,8 @@ export default function Chat({evi, configError = false}: ChatProps) {
           <Breadcrumb>
             <BreadcrumbList className='sm:gap-1.5'>
               <BreadcrumbItem>
-                <p className='text-foreground/55 font-light tracking-tight text-base'>
-                  Chat
+                <p className='text-foreground/55 font-light tracking-wider text-base'>
+                  EVI
                 </p>
               </BreadcrumbItem>
             </BreadcrumbList>
@@ -77,10 +82,10 @@ export default function Chat({evi, configError = false}: ChatProps) {
       <div className='min-h-0 flex-1 overflow-y-auto'>
         <div className='max-w-3xl mx-auto mt-6 space-y-6 portrait:px-4'>
           <div className='text-center my-8'>
-            <div className='inline-flex items-center bg-background rounded-full border border-foreground/20 shadow-xs text-xs font-medium py-1.5 px-3 text-foreground/70'>
+            <div className='inline-flex items-center rounded-full border border-foreground/20 shadow-xs text-xs font-medium py-1.5 px-3 text-foreground/80 dark:bg-background bg-white'>
               <Icon
                 name='px-clock'
-                className='me-1.5 text-foreground/30 -ms-1'
+                className='me-1.5 text-foreground/50 -ms-1'
               />
               Today
             </div>
@@ -93,22 +98,26 @@ export default function Chat({evi, configError = false}: ChatProps) {
                   <p>{m.content}</p>
                 </ChatMessage>
               ))
-          ) : configError ? (
-            <div className='flex flex-col items-center justify-center py-16 gap-4'>
-              <p className='text-foreground/55 text-sm'>
-                EVI not configured. Set HUME_API_KEY, HUME_SECRET_KEY, and
-                NEXT_PUBLIC_HUME_CONFIG_ID.
-              </p>
-            </div>
           ) : evi ? (
             <div className='flex flex-col items-center justify-center py-16 gap-4'>
+              {configError && (
+                <p className='max-w-md text-center text-foreground/55 text-sm'>
+                  {configError}
+                </p>
+              )}
               <Button
-                variant='outline'
+                variant='ghost'
                 size='lg'
                 onClick={evi.onEviToggle}
-                disabled={evi.isEviActive || evi.isEviConnecting}
-                className='rounded-xl'>
-                Start voice
+                disabled={
+                  isConfigLoading || evi.isEviActive || evi.isEviConnecting
+                }
+                className='rounded-full bg-radial _via-indigo-300/20 from-slate-300/50 to-indigo-200/40'>
+                {isConfigLoading
+                  ? 'Loading voice…'
+                  : configError
+                    ? 'Retry voice'
+                    : 'O'}
               </Button>
             </div>
           ) : null}
@@ -142,7 +151,7 @@ export default function Chat({evi, configError = false}: ChatProps) {
                 <Button
                   variant='outline'
                   size='icon'
-                  disabled={configError || evi?.isEviConnecting}
+                  disabled={isConfigLoading || evi?.isEviConnecting}
                   onClick={evi?.onEviToggle}
                   className={cn(
                     'rounded-lg size-8 border-[0.8px] hover:bg-background bg-background/90 hover:shadow-xs transition-shadow',
